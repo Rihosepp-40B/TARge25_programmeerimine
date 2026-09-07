@@ -3,6 +3,7 @@ using TARge25_Shop.Core.Dto;
 using TARge25_Shop.Core.ServiceInterface;
 using TARge25_Shop.Data;
 
+
 namespace TARge25_Shop.ApplicationServices.Services
 {
     public class SpaceshipServices : ISpaceshipServices
@@ -19,9 +20,10 @@ namespace TARge25_Shop.ApplicationServices.Services
 
         //See meetod on vaja controlleris esile kutsuda
         //Peab lisama interface, et kutsuda see meetod välja
-
         public async Task<Spaceship> Create(SpaceshipDto dto)
         {
+            //siin peab tegema vaheinstansi dto ja domain vahel,
+            //et andmed liiguvad dto-st domain objekt
             Spaceship spaceShip = new();
 
             spaceShip.Id = dto.Id;
@@ -33,10 +35,10 @@ namespace TARge25_Shop.ApplicationServices.Services
             spaceShip.UpdatedAt = dto.UpdatedAt;
 
             // Andmete salvestamine andmebaasi
-        _context.Spaceships.Add(spaceShip);
-        await _context.SaveChangesAsync();
+            _context.Spaceships.Add(spaceShip);
+            await _context.SaveChangesAsync();
 
-        return spaceShip;
+            return spaceShip;
         }
     }
 }

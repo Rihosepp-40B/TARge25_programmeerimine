@@ -1,5 +1,4 @@
-﻿
-namespace TARge25_Shop.Core.Dto
+﻿namespace TARge25_Shop.Core.Dto
 {
     public class SpaceshipDto
     {
