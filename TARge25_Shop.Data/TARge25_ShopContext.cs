@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TARge25_Shop.Core.Domain;
 
 namespace TARge25_Shop.Data
 {
@@ -9,5 +10,8 @@ namespace TARge25_Shop.Data
         public TARge25_ShopContext(DbContextOptions<TARge25_ShopContext> option) : base(option) // consturctor
         { }
 
+
+        // vaja lisada dbSet, mis on seotud meie domain klassiga Spaceship
+        public DbSet<Spaceship> Spaceships { get; set; }
     }
 }

@@ -10,4 +10,8 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.11" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\TARge25_Shop.Core\TARge25_Shop.Core.csproj" />
+  </ItemGroup>
+
 </Project>

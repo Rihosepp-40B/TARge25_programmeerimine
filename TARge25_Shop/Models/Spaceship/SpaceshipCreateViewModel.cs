@@ -1,7 +1,6 @@
-﻿
-namespace TARge25_Shop.Core.Dto
+﻿namespace TARge25_Shop.Models.Spaceship
 {
-    public class SpaceshipDto
+    public class SpaceshipCreateViewModel
     {
         public Guid Id { get; set; }
         public string Name { get; set; } = string.Empty;
@@ -12,4 +11,6 @@ namespace TARge25_Shop.Core.Dto
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
     }
+}
+
 }
