@@ -1,3 +1,8 @@
+using Microsoft.EntityFrameworkCore;
+using TARge25_Shop.ApplicationServices.Services;
+using TARge25_Shop.Core.ServiceInterface;
+using TARge25_Shop.Data;
+
 namespace TARge25_Shop
 {
     public class Program
@@ -8,6 +13,12 @@ namespace TARge25_Shop
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddScoped<ISpaceshipServices, SpaceshipServices>();
+       
+            //On vaja alla laadida Microsoft.EEntityFrameworkCore.SqlServer NuGet pakett,
+            //et kasutada UseSqlServer meetodit
+            builder.Services.AddDbContext<TARge25_ShopContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             var app = builder.Build();
 
