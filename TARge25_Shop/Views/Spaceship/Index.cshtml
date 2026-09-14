@@ -26,9 +26,9 @@
             @foreach (var spaceship in Model)
             {
                 <tr>
-                    <td>@rowNumber</td>
+                    <td>@(rowNumber++)</td>
                     <td>@spaceship.Name</td>
-                    <td>@spaceship.Classification</td>
+                    <td>@spaceship.ShipType</td>
                     <td>@spaceship.CreatedAt</td>
                     <td>@spaceship.Crew</td>
                     <td>
