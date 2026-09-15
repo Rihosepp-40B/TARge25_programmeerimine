@@ -1,0 +1,64 @@
+﻿@model TARge25_Shop.Models.Spaceship.SpaceshipDeleteViewModel
+
+<h1>
+    Spaceship Delete
+</h1>
+<form method="post" enctype="multipart/form-data">
+
+    <div class="form-group row">
+        <label asp-for="Id" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            @* variant 1: input aga disabled, ei saa sisestada (muuta), väärtust ei edastata submitil *@
+            <input asp-for="Id" class="form-control-plaintext" disabled />
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label asp-for="Name" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            @* variant 1: input aga disabled, ei saa sisestada (muuta), väärtust ei edastata submitil *@
+            <input asp-for="Name" class="form-control-plaintext" disabled />
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label asp-for="ShipType" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            @* variant 2: input aga readonly, ei saa sisestada (muuta), väärtust ei edastatakse submitil *@
+            <input asp-for="ShipType" class="form-control-plaintext" readonly />
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label asp-for="Crew" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            @* variant 3: <p> ehk on tavaline tekst *@
+            <p class="form-control-plaintext">@Model.Crew</p>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label asp-for="EnginePower" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            <p class="form-control-plaintext">@Model.EnginePower</p>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label asp-for="CreatedAt" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            <p class="form-control-plaintext">@Model.CreatedAt</p>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label asp-for="UpdatedAt" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            <p class="form-control-plaintext">@Model.UpdatedAt</p>
+        </div>
+    </div>
+
+    <input asp-action="DeleteConfirmation" asp-controller="spaceship" type="submit" class="btn btn-primary" value="Delete Confirmation" />
+    <a asp-action="Index" asp-controller="spaceship" class="btn btn-secondary">Back to List</a>
+
+</form>

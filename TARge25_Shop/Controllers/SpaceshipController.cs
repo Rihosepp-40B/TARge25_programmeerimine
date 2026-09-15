@@ -90,6 +90,7 @@ namespace TARge25_Shop.Controllers
 
         }
 
+        [HttpPost]
         public async Task<IActionResult> Update(SpaceshipUpdateViewModel vm)
         {
             var dto = new SpaceshipDto
@@ -111,10 +112,66 @@ namespace TARge25_Shop.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpGet]
         public async Task<IActionResult> Delete(Guid Id)
         {
-            return View();
+            var spaceship = await _spaceshipServices.DetailAsync(Id);
+
+            if (spaceship == null)
+            {
+                return NotFound();
+            }
+
+            //See on vaheinstants domaini ja vm vahel
+            var vm = new SpaceshipDeleteViewModel
+            {
+                Id = spaceship.Id,
+                Name = spaceship.Name,
+                ShipType = spaceship.ShipType,
+                Crew = spaceship.Crew,
+                EnginePower = spaceship.EnginePower,
+                CreatedAt = spaceship.CreatedAt,
+                UpdatedAt = spaceship.UpdatedAt
+            };
+
+            return View(vm);
         }
-        
+
+        [HttpPost]
+        public async Task<IActionResult>DeleteConfirmation(Guid id)
+        {
+            var spaceship = await _spaceshipServices.Delete(id);
+         
+            if (spaceship == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(Guid Id)
+        {
+            var spaceship = await _spaceshipServices.DetailAsync(Id);
+
+            if (spaceship == null)
+            {
+                return NotFound();
+            }
+
+            //See on vaheinstants domaini ja vm vahel
+            var vm = new SpaceshipDetailViewModel
+            {
+                Id = spaceship.Id,
+                Name = spaceship.Name,
+                ShipType = spaceship.ShipType,
+                Crew = spaceship.Crew,
+                EnginePower = spaceship.EnginePower,
+                CreatedAt = spaceship.CreatedAt,
+                UpdatedAt = spaceship.UpdatedAt
+            };
+
+            return View(vm);
+        }
     }
 }
