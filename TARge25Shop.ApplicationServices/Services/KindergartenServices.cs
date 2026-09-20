@@ -1,4 +1,4 @@
-﻿
+﻿using Microsoft.EntityFrameworkCore;
 using TARge25_Shop.Core.Domain;
 using TARge25_Shop.Core.Dto;
 using TARge25_Shop.Core.ServiceInterface;
@@ -33,6 +33,33 @@ namespace TARge25_Shop.ApplicationServices.Services
             //Andmete salvestamine andmebaasi
             await _context.Kindergartens.AddAsync(kindergarten);
             await _context.SaveChangesAsync();
+
+            return kindergarten;
+        }
+
+        public async Task<Kindergarten> Update(KindergartenDto dto)
+        {
+            Kindergarten kindergarten = new();
+
+            kindergarten.Id = dto.Id;
+            kindergarten.GroupName = dto.GroupName;
+            kindergarten.ChildrenCount = dto.ChildrenCount;
+            kindergarten.KindergartenName = dto.KindergartenName;
+            kindergarten.TeacherName = dto.TeacherName;
+            kindergarten.CreatedAt = dto.CreatedAt;
+            kindergarten.UpdatedAt = DateTime.Now;
+
+            _context.Kindergartens.Update(kindergarten);
+            await _context.SaveChangesAsync();
+
+            return kindergarten;
+        }
+
+        //Meetod aitab vastuvõtta dto ja uuendab olemasolevat
+        public async Task<Kindergarten> DetailAsync(Guid id)
+        {
+            var kindergarten = await _context.Kindergartens
+                .FirstOrDefaultAsync(x => x.Id == id);
 
             return kindergarten;
         }
