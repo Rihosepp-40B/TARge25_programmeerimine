@@ -147,5 +147,30 @@ namespace TARge25_Shop.Controllers
             }
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(Guid Id)
+        {
+            var kindergarten = await _kindergartenServices.DetailAsync(Id);
+
+            if (kindergarten == null)
+            {
+                return NotFound();
+            }
+
+            //See on vaheinstants domaini ja vm vahel
+            var vm = new KindergartenDetailViewModel
+            {
+                Id = kindergarten.Id,
+                GroupName = kindergarten.GroupName,
+                ChildrenCount = kindergarten.ChildrenCount,
+                KindergartenName = kindergarten.KindergartenName,
+                TeacherName = kindergarten.TeacherName,
+                CreatedAt = kindergarten.CreatedAt,
+                UpdatedAt = kindergarten.UpdatedAt
+            };
+
+            return View(vm);
+        }
     }
 }
