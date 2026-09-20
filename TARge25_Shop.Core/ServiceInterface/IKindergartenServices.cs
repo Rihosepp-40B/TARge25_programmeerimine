@@ -5,7 +5,8 @@ using TARge25_Shop.Core.Dto;
 
 namespace TARge25_Shop.Core.ServiceInterface
 {
-    public class IKindergartenServices
+    public interface IKindergartenServices
     {
+        Task<Kindergarten> Create(KindergartenDto dto);
     }
 }

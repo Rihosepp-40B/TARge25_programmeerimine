@@ -17,5 +17,24 @@ namespace TARge25_Shop.ApplicationServices.Services
         {
             _context = context;
         }
+        public async Task<Kindergarten> Create(KindergartenDto dto)
+        {
+            //Vaheinstants dto ja domain vahel
+            Kindergarten kindergarten = new Kindergarten();
+
+            kindergarten.Id = Guid.NewGuid();
+            kindergarten.GroupName = dto.GroupName;
+            kindergarten.ChildrenCount = dto.ChildrenCount;
+            kindergarten.KindergartenName = dto.KindergartenName;
+            kindergarten.TeacherName = dto.TeacherName;
+            kindergarten.CreatedAt = DateTime.Now;
+            kindergarten.UpdatedAt = DateTime.Now;
+
+            //Andmete salvestamine andmebaasi
+            await _context.Kindergartens.AddAsync(kindergarten);
+            await _context.SaveChangesAsync();
+
+            return kindergarten;
+        }
     }
 }
