@@ -14,5 +14,8 @@ namespace TARge25_Shop.Data
 
         // vaja lisada dbSet, mis on seotud meie domain klassiga Spaceship
         public DbSet<Spaceship> Spaceships { get; set; }
+
+        // Kindergarten dbSet
+        public DbSet<Kindergarten> Kindergartens { get; set; }
     }
 }
