@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TARge25_Shop.ApplicationServices.Services;
+using TARge25_Shop.Core.Domain;
 using TARge25_Shop.Core.Dto;
 using TARge25_Shop.Core.ServiceInterface;
 using TARge25_Shop.Data;
 using TARge25_Shop.Models.Kindergarten;
+using TARge25_Shop.Models.Spaceship;
 
 namespace TARge25_Shop.Controllers
 {
@@ -81,7 +84,6 @@ namespace TARge25_Shop.Controllers
                 TeacherName = kindergarten.TeacherName,
                 CreatedAt = kindergarten.CreatedAt,
                 UpdatedAt = kindergarten.UpdatedAt
-
             };
 
             return View("CreateUpdate", vm);
@@ -103,6 +105,43 @@ namespace TARge25_Shop.Controllers
 
             var result = await _kindergartenServices.Update(dto);
             if (result == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Delete(Guid Id)
+        {
+            var kindergarten = await _kindergartenServices.DetailAsync(Id);
+
+            if (kindergarten == null)
+            {
+                return NotFound();
+            }
+
+            //See on vaheinstants domaini ja vm vahel
+            var vm = new KindergartenDeleteViewModel
+            {
+                Id = kindergarten.Id,
+                GroupName = kindergarten.GroupName,
+                ChildrenCount = kindergarten.ChildrenCount,
+                KindergartenName = kindergarten.KindergartenName,
+                TeacherName = kindergarten.TeacherName,
+                CreatedAt = kindergarten.CreatedAt,
+                UpdatedAt = kindergarten.UpdatedAt
+            };
+
+            return View(vm);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteConfirmation(Guid id)
+        {
+            var kindergarten = await _kindergartenServices.Delete(id);
+
+            if (kindergarten == null)
             {
                 return RedirectToAction(nameof(Index));
             }
