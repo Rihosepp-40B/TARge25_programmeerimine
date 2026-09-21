@@ -9,14 +9,18 @@ namespace TARge25_Shop.ApplicationServices.Services
 {
     public class SpaceshipServices : ISpaceshipServices
     {
-        public readonly TARge25_ShopContext _context;
+        private readonly TARge25_ShopContext _context;
+        private readonly IFileServices _fileServices;
 
         public SpaceshipServices
             (
-            TARge25_ShopContext context
+            TARge25_ShopContext context,
+            IFileServices fileServices
+
             )
         {
             _context = context;
+            _fileServices = fileServices;
         }
 
         //See meetod on vaja controlleris esile kutsuda
@@ -25,39 +29,42 @@ namespace TARge25_Shop.ApplicationServices.Services
         {
             //siin peab tegema vaheinstansi dto ja domain vahel,
             //et andmed liiguvad dto-st domain objekt
-            Spaceship spaceShip = new Spaceship();
+            Spaceship spaceship = new Spaceship();
 
-            spaceShip.Id = Guid.NewGuid();
-            spaceShip.Name = dto.Name;
-            spaceShip.ShipType = dto.ShipType;
-            spaceShip.Crew = dto.Crew;
-            spaceShip.EnginePower = dto.EnginePower;
-            spaceShip.CreatedAt = DateTime.Now;
-            spaceShip.UpdatedAt = DateTime.Now;
+            spaceship.Id = Guid.NewGuid();
+            spaceship.Name = dto.Name;
+            spaceship.ShipType = dto.ShipType;
+            spaceship.Crew = dto.Crew;
+            spaceship.EnginePower = dto.EnginePower;
+            spaceship.CreatedAt = DateTime.Now;
+            spaceship.UpdatedAt = DateTime.Now;
+            // Kui uus ankeet on loodud, siis toimub ka faili salvestamine
+            //saab kutsuda teise service classi meetotit esile service classis
+            _fileServices.FilesToApi(dto, spaceship);
 
             // Andmete salvestamine andmebaasi
-            await _context.Spaceships.AddAsync(spaceShip);
+            await _context.Spaceships.AddAsync(spaceship);
             await _context.SaveChangesAsync();
 
-            return spaceShip;
+            return spaceship;
         }
 
         public async Task<Spaceship> Update(SpaceshipDto dto)
         {
-            Spaceship spaceShip = new();
+            Spaceship spaceship = new();
 
-            spaceShip.Id = dto.Id;
-            spaceShip.Name = dto.Name;
-            spaceShip.ShipType = dto.ShipType;
-            spaceShip.Crew = dto.Crew;
-            spaceShip.EnginePower = dto.EnginePower;
-            spaceShip.CreatedAt = dto.CreatedAt;
-            spaceShip.UpdatedAt = DateTime.Now;
+            spaceship.Id = dto.Id;
+            spaceship.Name = dto.Name;
+            spaceship.ShipType = dto.ShipType;
+            spaceship.Crew = dto.Crew;
+            spaceship.EnginePower = dto.EnginePower;
+            spaceship.CreatedAt = dto.CreatedAt;
+            spaceship.UpdatedAt = DateTime.Now;
 
-            _context.Spaceships.Update(spaceShip);
+            _context.Spaceships.Update(spaceship);
             await _context.SaveChangesAsync();
 
-            return spaceShip;
+            return spaceship;
         }
         //teha update meetod, mis võtab vastu dto ja uuendab olmasolevat kosmoselaeva
         public async Task<Spaceship> DetailAsync(Guid id)

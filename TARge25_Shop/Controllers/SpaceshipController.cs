@@ -52,7 +52,17 @@ namespace TARge25_Shop.Controllers
                 Name = vm.Name,
                 ShipType = vm.ShipType,
                 Crew = vm.Crew,
-                EnginePower = vm.EnginePower
+                EnginePower = vm.EnginePower,
+
+                //failide edastamine dto-le
+                Files = vm.Files,
+                FileToApiDto = vm.Image
+                    .Select(x => new FileToApiDto
+                    {
+                        Id = x.ImageId,
+                        ExistingFilePath = x.Filepath,
+                        SpaceshipId = x.SpaceshipId
+                    }).ToArray()
             };
 
             // nüüd kutsume teenuse välja, et luua uus kosmoselaev. See on
