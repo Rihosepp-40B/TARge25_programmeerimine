@@ -37,7 +37,6 @@ namespace TARge25_Shop.SpaceshipTest
         }
 
         [Fact]
-
         // Selles testis kontrollitakse et (2) Kosmoselaeva päringul DB'st (1) Ei tohiks tagastada objekti (3) kui ID'd ei ole samad:
         //
         //                  1           2               3
@@ -54,6 +53,66 @@ namespace TARge25_Shop.SpaceshipTest
             //Kontroll
             Assert.NotEqual(wrongGuid, goodGuid);
 
+        }
+
+
+        // Seleta kodus lahti testi sisu
+        [Fact]
+        public async Task Should_GetSpaceshipByID_WhenGuidIsEqual()
+        {
+            // Ülesseade
+
+            Guid databaseGuid = Guid.Parse("9def918e-2eee-41b2-963e-31c34f4d7500");
+            Guid seekGuid = Guid.Parse("9def918e-2eee-41b2-963e-31c34f4d7500");
+
+            // Tegevus
+            await Svc<ISpaceshipServices>().DetailAsync(seekGuid);
+
+            // Kontroll
+            Assert.Equal(databaseGuid, seekGuid);
+        }
+
+        // Seleta kodus lahti testi sisu
+        [Fact]
+        public async Task Should_SpaceshipDeletedbyID_WhenReturnedResultIsEqual()
+        {
+            //Ülesanne
+            SpaceshipDto dto = MockSpaceshipData();
+
+            // Tegevus
+            var addSpaceship = await Svc<ISpaceshipServices>().Create(dto);
+            var deleteSpaceship = await Svc<ISpaceshipServices>().Delete((Guid)addSpaceship.Id);
+
+            //Kontroll
+            Assert.Equal(addSpaceship.Id, deleteSpaceship.Id);
+        }
+            
+        private SpaceshipDto MockSpaceshipData(bool isOneOrTwo = false)
+        {
+            if (isOneOrTwo == false)
+            {
+                return new SpaceshipDto
+                {
+                    Name = "X AE a L 10",
+                    ShipType = "Taldrik",
+                    Crew = 67,
+                    EnginePower = 69,
+                    UpdatedAt = DateTime.Now,
+                    CreatedAt = DateTime.Now
+                };
+            }
+            else
+            {
+                return new SpaceshipDto
+                {
+                    Name = "RAKETT69",
+                    ShipType = "Pointi",
+                    Crew = 1,
+                    EnginePower = 69,
+                    UpdatedAt = DateTime.Now,
+                    CreatedAt = DateTime.Now
+                };
+            }
         }
     }
 }
