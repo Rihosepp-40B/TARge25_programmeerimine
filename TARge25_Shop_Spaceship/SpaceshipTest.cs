@@ -58,6 +58,10 @@ namespace TARge25_Shop.SpaceshipTest
 
         // Seleta kodus lahti testi sisu
         [Fact]
+        // Selles testis kontrollitakse et (2) Kosmoselaeva päringul DB'st (1) peaks tagastama objekti (3) kui ID'd on samad:
+        //
+        //                  1           2               3
+        //                  \/          \/              \/
         public async Task Should_GetSpaceshipByID_WhenGuidIsEqual()
         {
             // Ülesseade
@@ -74,6 +78,10 @@ namespace TARge25_Shop.SpaceshipTest
 
         // Seleta kodus lahti testi sisu
         [Fact]
+        // Selles testis kontrollitakse et (2) Kosmoselaeva kustutamisel DB'st (1) peaks kustutama objekti (3) kui tagastatav väärtus on sama:
+        //
+        //                  1           2               3
+        //                  \/          \/              \/
         public async Task Should_SpaceshipDeletedbyID_WhenReturnedResultIsEqual()
         {
             //Ülesanne
