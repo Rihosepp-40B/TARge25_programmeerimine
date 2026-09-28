@@ -61,6 +61,8 @@ namespace TARge25_Shop.ApplicationServices.Services
             spaceship.CreatedAt = dto.CreatedAt;
             spaceship.UpdatedAt = DateTime.Now;
 
+            _fileServices.FilesToApi(dto, spaceship);
+
             _context.Spaceships.Update(spaceship);
             await _context.SaveChangesAsync();
 
