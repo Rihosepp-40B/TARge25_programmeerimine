@@ -8,7 +8,7 @@ using TARge25_Shop.Data;
 
 namespace TARge25_Shop.ApplicationServices.Services
 {
-    public class FileServices :IFileServices
+    public class FileServices : IFileServices
     {
         private readonly IHostEnvironment _webHost;
         private readonly TARge25_ShopContext _context;
@@ -82,6 +82,29 @@ namespace TARge25_Shop.ApplicationServices.Services
 
             _context.FileToApis.Remove(imageId);
             await _context.SaveChangesAsync();
+
+            return null;
+        }
+
+        public async Task<List<FileToApi>> RemoveImagesFromApi(FileToApiDto[] dtos)
+        {
+            //mitu pilti peab korraga ära kustutama
+            foreach (var dto in dtos)
+            {
+                var imageId = await _context.FileToApis
+                .FirstOrDefaultAsync(x => x.ExistingFilePath == dto.ExistingFilePath);
+
+                var filePath = _webHost.ContentRootPath + "\\wwwroot\\multipleFileUpload\\"
+                    + imageId.ExistingFilePath;
+
+                if (File.Exists(filePath))
+                {
+                    File.Delete(filePath);
+                }
+
+                _context.FileToApis.Remove(imageId);
+                await _context.SaveChangesAsync();
+            }
 
             return null;
         }
