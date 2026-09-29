@@ -147,5 +147,30 @@ namespace TARge25_Shop.Controllers
             }
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(Guid Id)
+        {
+            var realEstate = await _realEstateServices.DetailAsync(Id);
+
+            if (realEstate == null)
+            {
+                return NotFound();
+            }
+
+            //See on vaheinstants domaini ja vm vahel
+            var vm = new RealEstateDetailViewModel
+            {
+                Id = realEstate.Id,
+                Area = realEstate.Area,
+                Location = realEstate.Location,
+                RoomNumber = realEstate.RoomNumber,
+                BuildingType = realEstate.BuildingType,
+                CreatedAt = realEstate.CreatedAt,
+                ModifiedAt = realEstate.ModifiedAt
+            };
+
+            return View(vm);
+        }
     }
 }
