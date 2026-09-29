@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TARge25_Shop.Core.Dto;
 using TARge25_Shop.Core.ServiceInterface;
 using TARge25_Shop.Data;
 using TARge25_Shop.Models.RealEstate;
@@ -32,6 +33,36 @@ namespace TARge25_Shop.Controllers
                     CreatedAt = x.CreatedAt,
                 });
             return View(result);
+        }
+
+        [HttpGet]
+        public IActionResult Create()
+        {
+            RealEstateCreateUpdateViewModel result = new();
+
+            return View("CreateUpdate", result);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(RealEstateCreateUpdateViewModel vm)
+        {
+            var dto = new RealEstateDto
+            {
+                Area = vm.Area,
+                Location = vm.Location,
+                RoomNumber = vm.RoomNumber,
+                BuildingType = vm.BuildingType,
+            };
+
+            //Teenuse väljakutsumine, et luua uus
+            var result = await _realEstateServices.Create(dto);
+
+            if (result == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }
