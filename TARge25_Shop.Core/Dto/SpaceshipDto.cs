@@ -14,7 +14,7 @@ namespace TARge25_Shop.Core.Dto
         public IEnumerable<FileToApiDto> FileToApiDto {  get; set; }
             = new List<FileToApiDto>();
 
-        public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
+        public DateTime? CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
     }
 }

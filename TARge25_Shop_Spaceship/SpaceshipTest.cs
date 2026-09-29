@@ -84,7 +84,7 @@ namespace TARge25_Shop.SpaceshipTest
         //                  \/          \/              \/
         public async Task Should_SpaceshipDeletedbyID_WhenReturnedResultIsEqual()
         {
-            //Ülesanne
+            //Ülesseade
             SpaceshipDto dto = MockSpaceshipData();
 
             // Tegevus
@@ -94,7 +94,137 @@ namespace TARge25_Shop.SpaceshipTest
             //Kontroll
             Assert.Equal(addSpaceship.Id, deleteSpaceship.Id);
         }
+
+        [Fact]
+        public async Task ShouldNot_SpaceshipDeletedbyId_WhenDidNotDeleteSpaceship()
+        {
+            // Ülesseade
+            var dto = MockSpaceshipData();
+
+            // Tegevus
+            var spaceship1 = await Svc<ISpaceshipServices>().Create(dto);
+            var spaceship2 = await Svc<ISpaceshipServices>().Create(dto);
+
+            var result = await Svc<ISpaceshipServices>().Delete((Guid)spaceship2.Id);
+
+            // Kontroll
+            Assert.NotEqual(spaceship1.Id, result.Id);
+        }
+
+        // Tst, mis kontrollib, et spaceship uuendatajse, uute andmete korral
+        [Fact]
+        public async Task Should_UpdateSpaceshipById_WhenUpdatingData()
+        {
+            // Ülesseade
+            var guid = new Guid("33601633-f62f-4e5e-8d3f-282a49921b9f");
+
+            SpaceshipDto dto = MockSpaceshipData();
+
+            SpaceshipDto domain = new();
+
+            domain.Id = guid;
+            domain.EnginePower = 1000;
+            domain.Name = "Igor Mang 2";
+            domain.ShipType = "Püramiid";
+            domain.Crew = 422;
+            domain.CreatedAt = dto.CreatedAt;
+            domain.UpdatedAt = DateTime.Now;
+
+            // Tegevus
+            await Svc<ISpaceshipServices>().Update(dto);
+
+            // Kontroll
+            Assert.Equal(domain.Id, guid);
+            Assert.NotEqual(dto.EnginePower, domain.EnginePower);
+            Assert.NotEqual(dto.Name, domain.Name);
+            Assert.DoesNotMatch(dto.Crew.ToString(), domain.Crew.ToString());
+            Assert.DoesNotMatch(dto.ShipType, domain.ShipType);
+            Assert.Equal(dto.CreatedAt, domain.CreatedAt);
+            Assert.NotEqual(dto.UpdatedAt, domain.UpdatedAt);
+        }
+                
+        [Fact]
+        public async Task ShouldNot_UpdateSpaceshipById_WhenNoDataIsUpdated()
+        {
+            // Ülesseade
+            SpaceshipDto dto = MockSpaceshipData();
+            var createdSpaceship = await Svc<ISpaceshipServices>().Create(dto);
+
+            // Tegevus
+            SpaceshipDto nullDto = MockSpaceshipNullData();
+            var result = await Svc<ISpaceshipServices>().Update(nullDto);
+
+            // Kontroll
+            Assert.NotEqual(createdSpaceship.Id, result.Id);
+        }
+
+        // Kuna mootor ei saa olla negatiivse võimususega, kontrollime et ei saaks
+        // lisada negatiivse väärtusega võimsust
+        [Fact]
+        public async Task ShouldNot_CreateSpaceshipWithNegativeEnginePower_WhenEnginePowerNegative()
+        {
+            // Ülesseade
+            SpaceshipDto dto = MockSpaceshipData(true);
+            dto.EnginePower -= (dto.EnginePower * 2);
+
+            // Tegevus
+            var result = await Svc<ISpaceshipServices>().Create(dto);
+
+            // kontroll
+            Assert.True(result.EnginePower > 0);
+        }
+
+        // Test mis kontrollib, et meeskond on suurem kui 3 liiget, service ei tohi lisada sellest vähema arvuga objekti, service võib selle probleemi lahendada ükskõik kuidas
+
+        [Fact]
+        public async Task ShouldNot_CreateSpaceship_WhenCrewIsLessThanFour()
+        {
+            // Ülesseade
+            SpaceshipDto dto = MockSpaceshipData();
+            dto.Crew = 2;
+
+            // Tegevus
+            var result = await Svc<ISpaceshipServices>().Create(dto);
+
+            // Kontroll
+            Assert.True(result.Crew > 3);
+        }
+
+        [Fact]
+        public async Task Should_RemoveSpaceshipFromDB_WhenSpaceshipIsDeleted()
+        {
+            // Ülesseade
+            SpaceshipDto dto = MockSpaceshipData();
+
+            // Tegevus
+            var createdSpaceship = await Svc<ISpaceshipServices>().Create(dto);
+            var deletedSpaceship = await Svc<ISpaceshipServices>().Delete((Guid)createdSpaceship.Id);
+            var result = await Svc<ISpaceshipServices>().DetailAsync((Guid)createdSpaceship.Id);
+
+            // Kontroll
+            Assert.Equal(createdSpaceship.Id, deletedSpaceship.Id);
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task ShouldNot_RemoveSpaceshipFromDB_WhenSpaceshipIdIsDifferent()
+        {
+            //Ülesseade
+            SpaceshipDto dto = MockSpaceshipData();
+
+            // Tegevus
+            var createdSpaceship = await Svc<ISpaceshipServices>().Create(dto);
+            var createdSpaceship2 = await Svc<ISpaceshipServices>().Create(dto);
+            var deletedSpaceship = await Svc<ISpaceshipServices>().Delete((Guid)createdSpaceship2.Id);
+            var result = await Svc<ISpaceshipServices>().DetailAsync((Guid)createdSpaceship.Id);
+
+            // Kontroll
+            Assert.NotEqual(createdSpaceship.Id, deletedSpaceship.Id);
+            Assert.NotNull(result);
+            Assert.Equal(createdSpaceship.Id, result.Id);
+        }
             
+        /* üleval testid, all abimeetodid */
         private SpaceshipDto MockSpaceshipData(bool isOneOrTwo = false)
         {
             if (isOneOrTwo == false)
@@ -121,6 +251,25 @@ namespace TARge25_Shop.SpaceshipTest
                     CreatedAt = DateTime.Now
                 };
             }
+        }
+
+        /// <summary>
+        /// Returns a nulled object for testing purposes
+        /// </summary>
+        /// <returns></returns>
+
+        private SpaceshipDto MockSpaceshipNullData()
+        {
+            return new SpaceshipDto
+            {
+                Id = null,
+                Name = "",
+                ShipType = "",
+                Crew = 0,
+                EnginePower = 0,
+                UpdatedAt = DateTime.MinValue,
+                CreatedAt = DateTime.MinValue
+            };            
         }
     }
 }

@@ -41,6 +41,15 @@ namespace TARge25_Shop.ApplicationServices.Services
             // Kui uus ankeet on loodud, siis toimub ka faili salvestamine
             //saab kutsuda teise service classi meetotit esile service classis
             _fileServices.FilesToApi(dto, spaceship);
+            if (spaceship.EnginePower < 0)
+            {
+                spaceship.EnginePower = 1;
+            }
+
+            if (spaceship.Crew < 4)
+            {
+                spaceship.Crew = 4;
+            }
 
             // Andmete salvestamine andmebaasi
             await _context.Spaceships.AddAsync(spaceship);
@@ -58,7 +67,7 @@ namespace TARge25_Shop.ApplicationServices.Services
             spaceship.ShipType = dto.ShipType;
             spaceship.Crew = dto.Crew;
             spaceship.EnginePower = dto.EnginePower;
-            spaceship.CreatedAt = dto.CreatedAt;
+            spaceship.CreatedAt = (DateTime)dto.CreatedAt;
             spaceship.UpdatedAt = DateTime.Now;
 
             _context.Spaceships.Update(spaceship);
