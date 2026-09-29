@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TARge25_Shop.Core.Domain;
 using TARge25_Shop.Core.Dto;
 using TARge25_Shop.Core.ServiceInterface;
 using TARge25_Shop.Data;
@@ -62,6 +63,51 @@ namespace TARge25_Shop.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Update(Guid id)
+        {
+            var realEstate = await _realEstateServices.DetailAsync(id);
+
+            if (realEstate == null)
+            { return NotFound(); }
+
+            var vm = new RealEstateCreateUpdateViewModel
+            {
+                Id = realEstate.Id,
+                Area = realEstate.Area,
+                Location = realEstate.Location,
+                RoomNumber = realEstate.RoomNumber,
+                BuildingType = realEstate.BuildingType,
+                CreatedAt = realEstate.CreatedAt,
+                ModifiedAt = realEstate.ModifiedAt
+
+            };
+
+            return View("CreateUpdate", vm);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Update(RealEstateCreateUpdateViewModel vm)
+        {
+            var dto = new RealEstateDto
+            {
+                Id = vm.Id,
+                Area = vm.Area,
+                Location = vm.Location,
+                RoomNumber = vm.RoomNumber,
+                BuildingType = vm.BuildingType,
+                CreatedAt = vm.CreatedAt,
+                ModifiedAt = vm.ModifiedAt
+            };
+
+            var result = await _realEstateServices.Update(dto);
+            if (result == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
             return RedirectToAction(nameof(Index));
         }
     }
