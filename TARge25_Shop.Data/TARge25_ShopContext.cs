@@ -16,5 +16,7 @@ namespace TARge25_Shop.Data
         public DbSet<Spaceship> Spaceships { get; set; }
 
         public DbSet<FileToApi> FileToApis { get; set; }
+
+        public DbSet<RealEstate> RealEstates { get; set; }
     }
 }

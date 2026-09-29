@@ -1,6 +1,6 @@
-﻿namespace TARge25_Shop.Core.Domain
+﻿namespace TARge25_Shop.Core.Dto
 {
-    public class RealEstate
+    public class RealEstateDto
     {
         public Guid? Id { get; set; }
         public double? Area { get; set; }
