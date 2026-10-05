@@ -9,10 +9,12 @@ namespace TARge25_Shop.ApplicationServices.Services
     public class RealEstateServices : IRealEstateServices
     {
         public readonly TARge25_ShopContext _context;
+        private readonly IFileServices _fileServices;
 
-        public RealEstateServices(TARge25_ShopContext context)
+        public RealEstateServices(TARge25_ShopContext context, IFileServices fileServices)
         {
             _context = context;
+            _fileServices = fileServices;
         }
 
         public async Task<RealEstate> Create(RealEstateDto dto)
@@ -27,6 +29,11 @@ namespace TARge25_Shop.ApplicationServices.Services
             realEstate.BuildingType = dto.BuildingType;
             realEstate.CreatedAt = DateTime.Now;
             realEstate.ModifiedAt = DateTime.Now;
+
+            if (dto.Files != null)
+            {
+                _fileServices.UploadFilesToDatabase(dto, realEstate);
+            }
 
             //Andmete salvestamine andmebaasi
             await _context.RealEstates.AddAsync(realEstate);

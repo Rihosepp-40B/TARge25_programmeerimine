@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using TARge25_Shop.Core.Domain;
 using TARge25_Shop.Core.Dto;
 using TARge25_Shop.Core.ServiceInterface;
 using TARge25_Shop.Data;
@@ -53,6 +52,17 @@ namespace TARge25_Shop.Controllers
                 Location = vm.Location,
                 RoomNumber = vm.RoomNumber,
                 BuildingType = vm.BuildingType,
+
+                // Failide lisamine
+                Files = vm.Files,
+                Image = vm.Image
+                    .Select(x => new FileToDatabaseDto
+                    {
+                        Id = x.ImageId,
+                        RealEstateId = x.RealEstateId,
+                        ImageTitle = x.ImageTitle,
+                        ImageData = x.ImageData,
+                    }).ToArray()
             };
 
             //Teenuse väljakutsumine, et luua uus
