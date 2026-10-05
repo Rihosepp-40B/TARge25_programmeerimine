@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using TARge25_Shop.Core.Dto;
 using TARge25_Shop.Core.ServiceInterface;
 using TARge25_Shop.Data;
 using TARge25_Shop.Models.RealEstate;
+using TARge25_Shop.Models.Spaceship;
 
 namespace TARge25_Shop.Controllers
 {
@@ -168,19 +170,35 @@ namespace TARge25_Shop.Controllers
                 return NotFound();
             }
 
+            RealEstateImageViewModel[] images = await FileFromDatabase(Id);
+
             //See on vaheinstants domaini ja vm vahel
-            var vm = new RealEstateDetailViewModel
-            {
-                Id = realEstate.Id,
-                Area = realEstate.Area,
-                Location = realEstate.Location,
-                RoomNumber = realEstate.RoomNumber,
-                BuildingType = realEstate.BuildingType,
-                CreatedAt = realEstate.CreatedAt,
-                ModifiedAt = realEstate.ModifiedAt
-            };
+            var vm = new RealEstateDetailViewModel();
+
+            vm.Id = realEstate.Id;
+            vm.Area = realEstate.Area;
+            vm.Location = realEstate.Location;
+            vm.RoomNumber = realEstate.RoomNumber;
+            vm.BuildingType = realEstate.BuildingType;
+            vm.CreatedAt = realEstate.CreatedAt;
+            vm.ModifiedAt = realEstate.ModifiedAt;
+            vm.Image.AddRange(images);
 
             return View(vm);
+        }
+
+        private async Task<RealEstateImageViewModel[]> FileFromDatabase(Guid id)
+        {
+            return await _context.FileToDatabases
+                .Where(x => x.RealEstateId == id)
+                .Select(y => new RealEstateImageViewModel
+                {
+                    ImageId = y.Id,
+                    RealEstateId = y.RealEstateId,
+                    ImageData = y.ImageData,
+                    ImageTitle = y.ImageTitle,
+                    Image = string.Format("data:image/gif;base64,{0}", Convert.ToBase64String(y.ImageData))
+                }).ToArrayAsync();
         }
     }
 }
