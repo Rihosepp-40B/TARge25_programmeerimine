@@ -5,10 +5,10 @@ using Microsoft.Extensions.Hosting;
 using TARge25_Shop.ApplicationServices.Services;
 using TARge25_Shop.Core.ServiceInterface;
 using TARge25_Shop.Data;
-using TARge25_Shop.Tests.Macros;
-using TARge25_Shop.Tests.Mock;
+using TARge25_Shop.KindergartenTest.Macros;
+using TARge25_Shop.KindergartenTest.Mock;
 
-namespace TARge25_Shop.Tests
+namespace TARge25_Shop.KindergartenTest
 {
     public abstract class TestBase
     {

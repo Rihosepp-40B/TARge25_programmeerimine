@@ -5,14 +5,14 @@ using Microsoft.Extensions.Hosting;
 using TARge25_Shop.ApplicationServices.Services;
 using TARge25_Shop.Core.ServiceInterface;
 using TARge25_Shop.Data;
-using TARge25_Shop.Tests.Macros;
-using TARge25_Shop.Tests.Mock;
+using TARge25_Shop.KinderkartenTest.Macros;
+using TARge25_Shop.KinderkartenTest.Mock;
 
-namespace TARge25_Shop.Tests
+namespace TARge25_Shop.KinderkartenTest
 {
     public abstract class TestBase
     {
-        protected IServiceProvider serviceProvider {  get; set; }
+        protected IServiceProvider serviceProvider { get; set; }
 
         protected TestBase()
         {
@@ -32,18 +32,15 @@ namespace TARge25_Shop.Tests
 
         public virtual void SetupServices(ServiceCollection services)
         {
-            services.AddScoped<ISpaceshipServices, SpaceshipServices>();
-
             services.AddScoped<IKindergartenServices, KindergartenServices>();
-
             services.AddScoped<IFileServices, FileServices>();
             services.AddScoped<IHostEnvironment, MockIHostEnvironment>();
 
             services.AddDbContext<TARge25_ShopContext>(
                 x =>
                 {
-                x.UseInMemoryDatabase("Test");
-                x.ConfigureWarnings(b => b.Ignore(InMemoryEventId.TransactionIgnoredWarning));
+                    x.UseInMemoryDatabase("Test");
+                    x.ConfigureWarnings(b => b.Ignore(InMemoryEventId.TransactionIgnoredWarning));
                 }
                 );
             RegisterMacros(services);
@@ -79,7 +76,7 @@ namespace TARge25_Shop.Tests
             var macros = macroBaseType.Assembly.GetTypes()
                 .Where(t => macroBaseType.IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract);
 
-            foreach (var macro in macros) 
+            foreach (var macro in macros)
             {
                 services.AddSingleton(macros);
             }

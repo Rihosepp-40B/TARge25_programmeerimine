@@ -2,7 +2,7 @@
 using TARge25_Shop.Core.ServiceInterface;
 using Xunit;
 
-namespace TARge25_Shop.SpaceshipTest
+namespace TARge25_Shop.Tests
 {
     public class SpaceshipTest : TestBase
     {
@@ -111,7 +111,7 @@ namespace TARge25_Shop.SpaceshipTest
             Assert.NotEqual(spaceship1.Id, result.Id);
         }
 
-        // Tst, mis kontrollib, et spaceship uuendatajse, uute andmete korral
+        // Test, mis kontrollib, et spaceship uuendatakse, uute andmete korral
         [Fact]
         public async Task Should_UpdateSpaceshipById_WhenUpdatingData()
         {

@@ -1,10 +1,7 @@
 ﻿using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace TARge25_Shop.Tests.Mock
+namespace TARge25_Shop.KinderkartenTest.Mock
 {
     public class MockIHostEnvironment : IHostEnvironment
     {
