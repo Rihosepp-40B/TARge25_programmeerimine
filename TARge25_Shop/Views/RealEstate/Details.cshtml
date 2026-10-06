@@ -56,12 +56,13 @@
             <p class="form-control-plaintext">@Model.ModifiedAt</p>
         </div>
     </div>
-
-    @foreach (var images in Model.Image)
-    {
-        <partial name="_Images" model="images" />
-    }
-
+    <dl>
+        @foreach (var images in Model.Image)
+        {
+            <partial name="_Images" model="images" />
+        }
+    </dl>
+    <hr/>
     <a asp-action="Index" asp-controller="realEstate" class="btn btn-secondary">Back to List</a>
 
 </form>

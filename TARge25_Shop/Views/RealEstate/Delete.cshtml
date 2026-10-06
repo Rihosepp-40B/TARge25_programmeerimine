@@ -57,6 +57,11 @@
         </div>
     </div>
 
+    @foreach (var images in Model.Image)
+    {
+        <partial name="_Images" model="images" />
+    }
+
     <input asp-action="DeleteConfirmation" asp-controller="realEstate" type="submit" class="btn btn-primary" value="Delete Confirmation" />
     <a asp-action="Index" asp-controller="realEstate" class="btn btn-secondary">Back to List</a>
 
