@@ -54,6 +54,11 @@ namespace TARge25_Shop.ApplicationServices.Services
             realEstate.CreatedAt = dto.CreatedAt;
             realEstate.ModifiedAt = DateTime.Now;
 
+            if (dto.Files != null)
+            {
+                _fileServices.UploadFilesToDatabase(dto, realEstate);
+            }
+
             _context.RealEstates.Update(realEstate);
             await _context.SaveChangesAsync();
 
