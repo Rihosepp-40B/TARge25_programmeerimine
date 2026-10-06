@@ -84,9 +84,7 @@ namespace TARge25_Shop.ApplicationServices.Services
                 .Where(x => x.RealEstateId == id)
                 .Select(y => new FileToDatabaseDto
                 {
-                    Id = y.Id,
-                    ImageTitle = y.ImageTitle,
-                    RealEstateId = y.RealEstateId,
+                    Id = y.Id
                 }).ToArrayAsync();
 
             await _fileServices.RemoveImagesFromDatabase(images);

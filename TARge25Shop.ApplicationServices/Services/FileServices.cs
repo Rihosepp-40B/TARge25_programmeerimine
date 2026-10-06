@@ -103,8 +103,9 @@ namespace TARge25_Shop.ApplicationServices.Services
                 }
 
                 _context.FileToApis.Remove(imageId);
-                await _context.SaveChangesAsync();
             }
+
+            await _context.SaveChangesAsync();
 
             return null;
         }
@@ -145,8 +146,9 @@ namespace TARge25_Shop.ApplicationServices.Services
                     .FirstOrDefaultAsync(x => x.Id == dto.Id);
 
                 _context.FileToDatabases.Remove(imageId);
-                await _context.SaveChangesAsync();
             }
+
+            await _context.SaveChangesAsync();
 
             return null;
         }
