@@ -132,11 +132,15 @@ namespace TARge25_Shop.Controllers
             };
 
             var result = await _realEstateServices.Update(dto);
+
+            // Vaja, et pärast suunata objekti detail lehe vaatele 
+            var realEstateId = result.Id;
+
             if (result == null)
             {
                 return RedirectToAction(nameof(Index));
             }
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Details), new { id = realEstateId });
         }
 
         [HttpGet]

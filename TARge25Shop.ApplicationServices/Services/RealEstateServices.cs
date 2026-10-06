@@ -54,6 +54,7 @@ namespace TARge25_Shop.ApplicationServices.Services
             realEstate.CreatedAt = dto.CreatedAt;
             realEstate.ModifiedAt = DateTime.Now;
 
+            //Käivitab üleslaadimise juhul kui Files ei ole tühi
             if (dto.Files != null)
             {
                 _fileServices.UploadFilesToDatabase(dto, realEstate);
