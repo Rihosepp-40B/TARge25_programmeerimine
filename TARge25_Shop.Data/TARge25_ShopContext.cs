@@ -17,5 +17,7 @@ namespace TARge25_Shop.Data
 
         // Kindergarten dbSet
         public DbSet<Kindergarten> Kindergartens { get; set; }
+
+        public DbSet<FileToDatabase> FileToDatabases { get; set; }
     }
 }

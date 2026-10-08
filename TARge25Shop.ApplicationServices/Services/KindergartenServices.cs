@@ -9,13 +9,16 @@ namespace TARge25_Shop.ApplicationServices.Services
     public class KindergartenServices : IKindergartenServices
     {
         public readonly TARge25_ShopContext _context;
+        private readonly IFileServices _fileServices;
 
         public KindergartenServices
             (
-                TARge25_ShopContext context
+                TARge25_ShopContext context,
+                IFileServices fileServices
             )
         {
             _context = context;
+            _fileServices = fileServices;
         }
         public async Task<Kindergarten> Create(KindergartenDto dto)
         {
@@ -29,6 +32,11 @@ namespace TARge25_Shop.ApplicationServices.Services
             kindergarten.TeacherName = dto.TeacherName;
             kindergarten.CreatedAt = DateTime.Now;
             kindergarten.UpdatedAt = DateTime.Now;
+
+            if (dto.Files != null)
+            {
+                _fileServices.UploadFilesToDatabase(dto, kindergarten);
+            }
 
             //Andmete salvestamine andmebaasi
             await _context.Kindergartens.AddAsync(kindergarten);

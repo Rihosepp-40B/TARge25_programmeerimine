@@ -1,11 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using TARge25_Shop.ApplicationServices.Services;
-using TARge25_Shop.Core.Domain;
 using TARge25_Shop.Core.Dto;
 using TARge25_Shop.Core.ServiceInterface;
 using TARge25_Shop.Data;
 using TARge25_Shop.Models.Kindergarten;
-using TARge25_Shop.Models.Spaceship;
 
 namespace TARge25_Shop.Controllers
 {
@@ -54,6 +51,17 @@ namespace TARge25_Shop.Controllers
                 ChildrenCount = vm.ChildrenCount,
                 KindergartenName = vm.KindergartenName,
                 TeacherName = vm.TeacherName,
+
+                // Failide lisamine
+                Files = vm.Files,
+                Image = vm.Image
+                    .Select(x => new FileToDatabaseDto
+                    {
+                        Id = x.ImageId,
+                        KindergartenId = x.KindergartenId,
+                        ImageTitle = x.ImageTitle,
+                        ImageData = x.ImageData,
+                    }).ToArray()
             };
 
             //Teenuse väljakutsumine, et luua uus Kindergarten
