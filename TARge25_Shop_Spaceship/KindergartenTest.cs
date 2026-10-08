@@ -1,4 +1,5 @@
-﻿using TARge25_Shop.Core.Dto;
+﻿using TARge25_Shop.ApplicationServices.Services;
+using TARge25_Shop.Core.Dto;
 using TARge25_Shop.Core.ServiceInterface;
 using Xunit;
 
@@ -8,7 +9,7 @@ namespace TARge25_Shop.Tests
     {
         [Fact]
         //Selles testis kontrollitakse et lasteaia lisamisel ei tohiks tulemus olla tühi
-        public async Task ShouldNot_AddEmptyKinderkarten_WhenResultIsReturned()
+        public async Task ShouldNot_AddEmptyKindergarten_WhenResultIsReturned()
         {
             //Ülesseade
             KindergartenDto dto = new KindergartenDto()
@@ -93,7 +94,7 @@ namespace TARge25_Shop.Tests
                 
         [Fact]
         // Selles testis kontrollitakse, et lasteaeda uuendatakse, uute andmete korral
-        public async Task Should_UpdateSpaceshipById_WhenUpdatingData()
+        public async Task Should_UpdateKindergartenById_WhenUpdatingData()
         {
             // Ülesseade
             var guid = new Guid("33601633-f62f-4e5e-8d3f-282a49921b9f");
@@ -139,6 +140,55 @@ namespace TARge25_Shop.Tests
             Assert.NotEqual(createdKindergarten.Id, result.Id);
         }
 
+        [Fact]
+        public async Task ShouldNot_CreateKindergarten_WhenNegativeChildrenCount()
+        {
+            // Ülesseade
+            KindergartenDto dto = MockKindergartenData(true);
+            dto.ChildrenCount -= (dto.ChildrenCount * 2);
+
+            // Tegevus
+            var result = await Svc<IKindergartenServices>().Create(dto);
+
+            // kontroll
+            Assert.True(result.ChildrenCount >= 0);
+        }
+
+        [Fact]
+        // Selles testis kontrollitakse, et lasteaed kustutatkse andmebaasist, kui seda kustutakse.
+        public async Task Should_RemoveKindergartenFromDB_WhenKindergartenIsDeleted()
+        {
+            // Ülesseade
+            KindergartenDto dto = MockKindergartenData();
+
+            // Tegevus
+            var createdKindergarten = await Svc<IKindergartenServices>().Create(dto);
+            var deletedKindergarten = await Svc<IKindergartenServices>().Delete((Guid)createdKindergarten.Id);
+            var result = await Svc<IKindergartenServices>().DetailAsync((Guid)createdKindergarten.Id);
+
+            // Kontroll
+            Assert.Equal(createdKindergarten.Id, deletedKindergarten.Id);
+            Assert.Null(result);
+        }
+
+        [Fact]
+        //Selles testis kontrollime, et lasteaia eemaldamisel, ei kustutaks vale ID'ga lasteaeda andmebaasist
+        public async Task ShouldNot_RemoveKindergartenFromDB_WhenKindergartenIdIsDifferent()
+        {
+            //Ülesseade
+            KindergartenDto dto = MockKindergartenData();
+
+            // Tegevus
+            var createdKindergarten = await Svc<IKindergartenServices>().Create(dto);
+            var createdKindergarten2 = await Svc<IKindergartenServices>().Create(dto);
+            var deletedKindergarten = await Svc<IKindergartenServices>().Delete((Guid)createdKindergarten2.Id);
+            var result = await Svc<IKindergartenServices>().DetailAsync((Guid)createdKindergarten.Id);
+
+            // Kontroll
+            Assert.NotEqual(createdKindergarten.Id, deletedKindergarten.Id);
+            Assert.NotNull(result);
+            Assert.Equal(createdKindergarten.Id, result.Id);
+        }
 
         /* üleval testid, all abimeetodid */
         private KindergartenDto MockKindergartenData(bool isOneOrTwo = false)
@@ -167,7 +217,7 @@ namespace TARge25_Shop.Tests
                     CreatedAt = DateTime.Now,
                 };
             }
-        }
+        }        
 
         private KindergartenDto MockKindergartenNullData()
         {

@@ -30,6 +30,13 @@ namespace TARge25_Shop.ApplicationServices.Services
             kindergarten.CreatedAt = DateTime.Now;
             kindergarten.UpdatedAt = DateTime.Now;
 
+
+            //Testimiseks lisatud arvu kaitse
+            if (kindergarten.ChildrenCount < 0)
+            {
+                kindergarten.ChildrenCount = 0;
+            }
+
             //Andmete salvestamine andmebaasi
             await _context.Kindergartens.AddAsync(kindergarten);
             await _context.SaveChangesAsync();
