@@ -4,7 +4,7 @@ using TARge25_Shop.Core.Domain;
 using TARge25_Shop.Core.Dto;
 using TARge25_Shop.Core.ServiceInterface;
 using TARge25_Shop.Data;
-
+using Microsoft.AspNetCore.Http;
 
 namespace TARge25_Shop.ApplicationServices.Services
 {
@@ -110,24 +110,39 @@ namespace TARge25_Shop.ApplicationServices.Services
             return null;
         }
 
-        public void UploadFilesToDatabase(RealEstateDto dto, RealEstate domain)
+        public void UploadRealEstateFilesToDatabase(RealEstateDto dto, RealEstate domain)
+        {
+            UploadFilesToDataBase(dto.Files, file => new FileToDatabase
+            {
+                Id = Guid.NewGuid(),
+                ImageTitle = file.FileName,
+                RealEstateId = domain.Id
+            });
+        }
+        public void UploadKindergartenFilesToDatabase(KindergartenDto dto, Kindergarten domain)
+        {
+            UploadFilesToDataBase(dto.Files, file => new FileToDatabase
+            {
+                Id = Guid.NewGuid(),
+                ImageTitle = file.FileName,
+                KindergartenId = domain.Id
+            });
+        }
+
+        //Ühine failiüleslaadimise meetod, võtab sisse dto failid ja andmbaasis täidetavad (tekstilised) andmed, failidest teeb funktsioon ise vastavate veergude andmed
+        private void UploadFilesToDataBase(List<IFormFile> files, Func<IFormFile, FileToDatabase> fileToDatabase)
         {
             // Toimub kontroll, kas on faile või ei ole
-            if (dto.Files != null && dto.Files.Count > 0)
+            if (files != null && files.Count > 0)
             {
                 // Tuleb kasutada foreachi, et mitu faili ülesse laadida
-                foreach (var file in dto.Files)
+                foreach (var file in files)
                 {
                     //teha muutuja, mis salvestab faili nime
                     using(var target = new MemoryStream())
                     {
-                        FileToDatabase files = new FileToDatabase()
-                        {
-                            Id = Guid.NewGuid(),
-                            ImageTitle = file.FileName,
-                            RealEstateId = domain.Id
-                        };
-
+                        FileToDatabase files = FileToDatabase(file);
+                        
                         file.CopyTo(target);
                         files.ImageData = target.ToArray();
 
