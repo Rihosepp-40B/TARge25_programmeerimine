@@ -130,11 +130,16 @@ namespace TARge25_Shop.Controllers
             };
 
             var result = await _kindergartenServices.Update(dto);
+
+            // Vaja, et pärast suunata objekti detail lehe vaatele 
+            var kindergartenId = result.Id;
+
+            // If vajalik, juhuks kui update ei õnnestu ja result tagastab null.
             if (result == null)
             {
                 return RedirectToAction(nameof(Index));
             }
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Details), new { id = kindergartenId });
         }
 
         [HttpGet]
