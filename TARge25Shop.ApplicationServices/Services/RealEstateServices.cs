@@ -32,7 +32,7 @@ namespace TARge25_Shop.ApplicationServices.Services
 
             if (dto.Files != null)
             {
-                _fileServices.UploadFilesToDatabase(dto, realEstate);
+                _fileServices.UploadRealEstateFilesToDatabase(dto, realEstate);
             }
 
             //Andmete salvestamine andmebaasi
@@ -57,7 +57,7 @@ namespace TARge25_Shop.ApplicationServices.Services
             //Käivitab üleslaadimise juhul kui Files ei ole tühi
             if (dto.Files != null)
             {
-                _fileServices.UploadFilesToDatabase(dto, realEstate);
+                _fileServices.UploadRealEstateFilesToDatabase(dto, realEstate);
             }
 
             _context.RealEstates.Update(realEstate);

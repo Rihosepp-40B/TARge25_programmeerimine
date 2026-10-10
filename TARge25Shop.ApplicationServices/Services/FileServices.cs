@@ -130,18 +130,18 @@ namespace TARge25_Shop.ApplicationServices.Services
         }
 
         //Ühine failiüleslaadimise meetod, võtab sisse dto failid ja andmbaasis täidetavad (tekstilised) andmed, failidest teeb funktsioon ise vastavate veergude andmed
-        private void UploadFilesToDataBase(List<IFormFile> files, Func<IFormFile, FileToDatabase> fileToDatabase)
+        private void UploadFilesToDataBase(List<IFormFile> fileList, Func<IFormFile, FileToDatabase> fileToDatabase)
         {
             // Toimub kontroll, kas on faile või ei ole
-            if (files != null && files.Count > 0)
+            if (fileList != null && fileList.Count > 0)
             {
                 // Tuleb kasutada foreachi, et mitu faili ülesse laadida
-                foreach (var file in files)
+                foreach (var file in fileList)
                 {
                     //teha muutuja, mis salvestab faili nime
                     using(var target = new MemoryStream())
                     {
-                        FileToDatabase files = FileToDatabase(file);
+                        FileToDatabase files = fileToDatabase(file);
                         
                         file.CopyTo(target);
                         files.ImageData = target.ToArray();

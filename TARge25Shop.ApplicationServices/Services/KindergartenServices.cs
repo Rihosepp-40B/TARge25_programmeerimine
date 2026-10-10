@@ -35,7 +35,7 @@ namespace TARge25_Shop.ApplicationServices.Services
 
             if (dto.Files != null)
             {
-                _fileServices.UploadFilesToDatabase(dto, kindergarten);
+                _fileServices.UploadKindergartenFilesToDatabase(dto, kindergarten);
             }
 
             //Andmete salvestamine andmebaasi
@@ -59,7 +59,7 @@ namespace TARge25_Shop.ApplicationServices.Services
 
             if (dto.Files != null)
             {
-                _fileServices.UploadFilesToDatabase(dto, kindergarten);
+                _fileServices.UploadKindergartenFilesToDatabase(dto, kindergarten);
             }
 
             _context.Kindergartens.Update(kindergarten);
