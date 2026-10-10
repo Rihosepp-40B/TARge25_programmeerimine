@@ -57,6 +57,11 @@ namespace TARge25_Shop.ApplicationServices.Services
             kindergarten.CreatedAt = dto.CreatedAt;
             kindergarten.UpdatedAt = DateTime.Now;
 
+            if (dto.Files != null)
+            {
+                _fileServices.UploadFilesToDatabase(dto, kindergarten);
+            }
+
             _context.Kindergartens.Update(kindergarten);
             await _context.SaveChangesAsync();
 

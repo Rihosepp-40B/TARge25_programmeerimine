@@ -1,4 +1,5 @@
-﻿using TARge25_Shop.Core.Domain;
+﻿using Microsoft.EntityFrameworkCore;
+using TARge25_Shop.Core.Domain;
 using TARge25_Shop.Core.Dto;
 using TARge25_Shop.Core.ServiceInterface;
 using TARge25_Shop.Data;
@@ -41,6 +42,33 @@ namespace TARge25_Shop.ApplicationServices.Services
                     }
                 }
             }
+        }
+
+        public async Task<FileToDatabase> RemoveImagesFromDatabase(FileToDatabaseDto[] dtos)
+        {
+            foreach (var dto in dtos)
+            {
+                var imageId = await _context.FileToDatabases
+                    .Where(x => x.Id == dto.Id)
+                    .FirstOrDefaultAsync(x => x.Id == dto.Id);
+
+                _context.FileToDatabases.Remove(imageId);
+                await _context.SaveChangesAsync();
+            }
+
+            return null;
+        }
+
+        public async Task<FileToDatabase> RemoveImageFromDatabase(FileToDatabaseDto dto)
+        {
+            var image = await _context.FileToDatabases
+                 .Where(x => x.Id == dto.Id)
+                 .FirstOrDefaultAsync();
+
+            _context.FileToDatabases.Remove(image);
+            await _context.SaveChangesAsync();
+
+            return image;
         }
     }
 }
