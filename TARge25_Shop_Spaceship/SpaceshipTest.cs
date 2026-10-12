@@ -1,5 +1,6 @@
 ﻿using TARge25_Shop.Core.Dto;
 using TARge25_Shop.Core.ServiceInterface;
+using TARge25_Shop.Data;
 using Xunit;
 
 namespace TARge25_Shop.Tests
@@ -132,6 +133,8 @@ namespace TARge25_Shop.Tests
 
             // Tegevus
             await Svc<ISpaceshipServices>().Update(domain);
+            //kill first connection: added tracker clearing to update
+            Svc<TARge25_ShopContext>().ChangeTracker.Clear();
             var result2 = await Svc<ISpaceshipServices>().DetailAsync(guid);
 
             // Kontroll

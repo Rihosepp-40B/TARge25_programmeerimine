@@ -1,6 +1,7 @@
 ﻿using TARge25_Shop.ApplicationServices.Services;
 using TARge25_Shop.Core.Dto;
 using TARge25_Shop.Core.ServiceInterface;
+using TARge25_Shop.Data;
 using Xunit;
 
 namespace TARge25_Shop.Tests
@@ -96,11 +97,11 @@ namespace TARge25_Shop.Tests
         // Selles testis kontrollitakse, et lasteaeda uuendatakse, uute andmete korral
         public async Task Should_UpdateKindergartenById_WhenUpdatingData()
         {
-            // Ülesseade
-            var guid = new Guid("33601633-f62f-4e5e-8d3f-282a49921b9f");
-
+            // Ülesseade            
             KindergartenDto dto = MockKindergartenData();
+            var result = await Svc<IKindergartenServices>().Create(dto);
 
+            var guid = (Guid)result.Id;
             KindergartenDto domain = new();
 
             domain.Id = guid;
@@ -112,16 +113,19 @@ namespace TARge25_Shop.Tests
             domain.CreatedAt = dto.CreatedAt;
 
             // Tegevus
-            await Svc<IKindergartenServices>().Update(dto);
+            await Svc<IKindergartenServices>().Update(domain);
+
+            Svc<TARge25_ShopContext>().ChangeTracker.Clear();
+            var result2 = await Svc<IKindergartenServices>().DetailAsync(guid);
 
             // Kontroll
-            Assert.Equal(domain.Id, guid);
-            Assert.NotEqual(dto.GroupName, domain.GroupName);
-            Assert.NotEqual(dto.ChildrenCount, domain.ChildrenCount);
-            Assert.NotEqual(dto.KindergartenName, domain.KindergartenName);
-            Assert.NotEqual(dto.TeacherName, domain.TeacherName);
-            Assert.Equal(dto.CreatedAt, domain.CreatedAt);
-            Assert.NotEqual(dto.UpdatedAt, domain.UpdatedAt);
+            Assert.Equal(domain.Id, result2.Id);
+            Assert.NotEqual(dto.GroupName, result2.GroupName);
+            Assert.NotEqual(dto.ChildrenCount, result2.ChildrenCount);
+            Assert.NotEqual(dto.KindergartenName, result2.KindergartenName);
+            Assert.NotEqual(dto.TeacherName, result2.TeacherName);
+            Assert.Equal(dto.CreatedAt, result2.CreatedAt);
+            Assert.NotEqual(dto.UpdatedAt, result2.UpdatedAt);
         }
 
         [Fact]

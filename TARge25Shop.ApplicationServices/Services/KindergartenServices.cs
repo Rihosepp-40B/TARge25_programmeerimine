@@ -56,6 +56,8 @@ namespace TARge25_Shop.ApplicationServices.Services
             kindergarten.CreatedAt = dto.CreatedAt;
             kindergarten.UpdatedAt = DateTime.Now;
 
+            //Andmete uuendamine andmebaasis
+            _context.ChangeTracker.Clear();
             _context.Kindergartens.Update(kindergarten);
             await _context.SaveChangesAsync();
 
