@@ -30,15 +30,25 @@ namespace TARge25_Shop.ApplicationServices.Services
             kindergarten.CreatedAt = DateTime.Now;
             kindergarten.UpdatedAt = DateTime.Now;
 
-
             //Testimiseks lisatud arvu kaitse
             if (kindergarten.ChildrenCount < 0)
             {
                 kindergarten.ChildrenCount = 0;
             }
 
-            // Testimiseks lisatud, et väärtused mis on nõutud tagastaksid null, kui lahter on tühi.
-            if (kindergarten.GroupName == null || kindergarten.KindergartenName == null || kindergarten.TeacherName == null)
+            if (kindergarten.ChildrenCount > 30)
+            {
+                kindergarten.ChildrenCount = 30;
+            }
+
+            // Testimiseks lisatud, et väärtused mis on nõutud tagastaksid null, kui lahter on null.
+            if (string.IsNullOrWhiteSpace(kindergarten.GroupName) || string.IsNullOrWhiteSpace(kindergarten.KindergartenName) || string.IsNullOrWhiteSpace(kindergarten.TeacherName))
+            {
+                return null;
+            }
+
+            //Õpetaja nime pikkuse piirang kolm tähemärki
+            if(kindergarten.TeacherName.Length < 3)
             {
                 return null;
             }
@@ -61,6 +71,24 @@ namespace TARge25_Shop.ApplicationServices.Services
             kindergarten.TeacherName = dto.TeacherName;
             kindergarten.CreatedAt = (DateTime)dto.CreatedAt;
             kindergarten.UpdatedAt = DateTime.Now;
+
+            // Testimiseks lisatud, et väärtused mis on nõutud tagastaksid null, kui lahter on tühi.
+            if (string.IsNullOrWhiteSpace(kindergarten.GroupName) || string.IsNullOrWhiteSpace(kindergarten.KindergartenName) || string.IsNullOrWhiteSpace(kindergarten.TeacherName))
+            {
+                return null;
+            }
+
+            //Testimiseks lisatud arvu kaitse
+            if (kindergarten.ChildrenCount < 0)
+            {
+                kindergarten.ChildrenCount = 0;
+            }
+
+            //Õpetaja nime pikkuse piirang kolm tähemärki
+            if (kindergarten.TeacherName.Length < 3)
+            {
+                return null;
+            }
 
             //Andmete uuendamine andmebaasis
             _context.ChangeTracker.Clear();
