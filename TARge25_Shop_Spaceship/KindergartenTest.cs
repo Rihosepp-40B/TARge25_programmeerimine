@@ -1,5 +1,4 @@
-﻿using TARge25_Shop.ApplicationServices.Services;
-using TARge25_Shop.Core.Dto;
+﻿using TARge25_Shop.Core.Dto;
 using TARge25_Shop.Core.ServiceInterface;
 using TARge25_Shop.Data;
 using Xunit;
@@ -110,7 +109,6 @@ namespace TARge25_Shop.Tests
             domain.KindergartenName = "LotteTest3";
             domain.TeacherName = "TestÕpetaja3";
             domain.UpdatedAt = DateTime.Now;
-            domain.CreatedAt = dto.CreatedAt;
 
             // Tegevus
             await Svc<IKindergartenServices>().Update(domain);
@@ -159,7 +157,7 @@ namespace TARge25_Shop.Tests
         }
 
         [Fact]
-        // Selles testis kontrollitakse, et lasteaed kustutatkse andmebaasist, kui seda kustutakse.
+        // Selles testis kontrollitakse, et lasteaed kustutatakse andmebaasist, kui seda kustutakse.
         public async Task Should_RemoveKindergartenFromDB_WhenKindergartenIsDeleted()
         {
             // Ülesseade
@@ -192,6 +190,111 @@ namespace TARge25_Shop.Tests
             Assert.NotEqual(createdKindergarten.Id, deletedKindergarten.Id);
             Assert.NotNull(result);
             Assert.Equal(createdKindergarten.Id, result.Id);
+        }
+
+        // Siit alatest on enda lisatud testid.
+
+        [Fact]
+        // Selles testis kontrollime, et ei looda lasteaeda, kui puudub grupinimi
+        public async Task ShouldNot_CreateKindergarten_WhenKindergartenGroupIsNull()
+        {
+            //Ülesseade
+            KindergartenDto dto = new KindergartenDto()
+            {
+                GroupName = null,
+                ChildrenCount = 1,
+                KindergartenName = "LotteTest",
+                TeacherName = "TestÕpetaja",
+                UpdatedAt = DateTime.Now,
+                CreatedAt = DateTime.Now,
+            };
+
+            // Tegevus
+            var result = await Svc<IKindergartenServices>().Create(dto);
+
+            //Kontroll
+            Assert.Null(result);
+        }
+
+        [Fact]
+        // Selles testis kontrollime, et ei looda lasteaeda, kui puudub lasteaianimi
+        public async Task ShouldNot_CreateKindergarten_WhenKindergartenNameIsNull()
+        {
+            //Ülesseade
+            KindergartenDto dto = new KindergartenDto()
+            {
+                GroupName = "Test",
+                ChildrenCount = 1,
+                KindergartenName = null,
+                TeacherName = "TestÕpetaja",
+                UpdatedAt = DateTime.Now,
+                CreatedAt = DateTime.Now,
+            };
+
+            // Tegevus
+            var result = await Svc<IKindergartenServices>().Create(dto);
+
+            //Kontroll
+            Assert.Null(result);
+        }
+
+        [Fact]
+        // Selles testis kontrollime, et ei looda lasteaeda, kui puudub õpetajanimi
+        public async Task ShouldNot_CreateKindergarten_WhenTeacherNameIsNull()
+        {
+            //Ülesseade
+            KindergartenDto dto = new KindergartenDto()
+            {
+                GroupName = "Test",
+                ChildrenCount = 1,
+                KindergartenName = "LotteTest",
+                TeacherName = "TestÕpetaja",
+                UpdatedAt = DateTime.Now,
+                CreatedAt = DateTime.Now,
+            };
+
+            // Tegevus
+            var result = await Svc<IKindergartenServices>().Create(dto);
+
+            //Kontroll
+            Assert.Null(result);
+        }
+
+        [Fact]
+        // Selles testis kontrollime, et tagastatakse vana grupinime sisend, kui muutmisel lahter tühjendatakse
+        public async Task Should_UpdateKindergartenWithOldGroupName_WhenGroupNameUpdatedNull()
+        {
+            // Ülesseade            
+            KindergartenDto dto = MockKindergartenData();
+            var result = await Svc<IKindergartenServices>().Create(dto);
+
+            var guid = (Guid)result.Id;
+            KindergartenDto domain = new();
+
+            domain.Id = guid;
+            domain.GroupName = null;
+            domain.ChildrenCount = 3;
+            domain.KindergartenName = "LotteTest3";
+            domain.TeacherName = "TestÕpetaja3";
+            domain.UpdatedAt = DateTime.Now;
+            domain.CreatedAt = dto.CreatedAt;
+
+            // Tegevus
+            await Svc<IKindergartenServices>().Update(domain);
+
+            Svc<TARge25_ShopContext>().ChangeTracker.Clear();
+            var result2 = await Svc<IKindergartenServices>().DetailAsync(guid);
+
+            // Kontroll
+            Assert.NotNull(domain.Id);
+            Assert.Equal(domain.Id, result2.Id);
+            Assert.NotEqual(dto.ChildrenCount, result2.ChildrenCount);
+            Assert.NotEqual(dto.KindergartenName, result2.KindergartenName);
+            Assert.NotEqual(dto.TeacherName, result2.TeacherName);
+            Assert.Equal(dto.CreatedAt, result2.CreatedAt);
+            Assert.NotEqual(dto.UpdatedAt, result2.UpdatedAt);
+
+            Assert.Equal(dto.GroupName, result2.GroupName);
         }
 
         /* üleval testid, all abimeetodid */

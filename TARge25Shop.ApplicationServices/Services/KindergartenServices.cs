@@ -37,6 +37,12 @@ namespace TARge25_Shop.ApplicationServices.Services
                 kindergarten.ChildrenCount = 0;
             }
 
+            // Testimiseks lisatud, et väärtused mis on nõutud tagastaksid null, kui lahter on tühi.
+            if (kindergarten.GroupName == null || kindergarten.KindergartenName == null || kindergarten.TeacherName == null)
+            {
+                return null;
+            }
+
             //Andmete salvestamine andmebaasi
             await _context.Kindergartens.AddAsync(kindergarten);
             await _context.SaveChangesAsync();
@@ -53,7 +59,7 @@ namespace TARge25_Shop.ApplicationServices.Services
             kindergarten.ChildrenCount = dto.ChildrenCount;
             kindergarten.KindergartenName = dto.KindergartenName;
             kindergarten.TeacherName = dto.TeacherName;
-            kindergarten.CreatedAt = dto.CreatedAt;
+            kindergarten.CreatedAt = (DateTime)dto.CreatedAt;
             kindergarten.UpdatedAt = DateTime.Now;
 
             //Andmete uuendamine andmebaasis
