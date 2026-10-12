@@ -70,6 +70,8 @@ namespace TARge25_Shop.ApplicationServices.Services
             spaceship.CreatedAt = (DateTime)dto.CreatedAt;
             spaceship.UpdatedAt = DateTime.Now;
 
+            //Andmete uuendamine andmebaasis
+            _context.ChangeTracker.Clear();
             _context.Spaceships.Update(spaceship);
             await _context.SaveChangesAsync();
 

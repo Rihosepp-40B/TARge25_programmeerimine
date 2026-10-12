@@ -131,16 +131,17 @@ namespace TARge25_Shop.Tests
             domain.UpdatedAt = DateTime.Now;
 
             // Tegevus
-            await Svc<ISpaceshipServices>().Update(dto);
+            await Svc<ISpaceshipServices>().Update(domain);
+            var result2 = await Svc<ISpaceshipServices>().DetailAsync(guid);
 
             // Kontroll
-            Assert.Equal(domain.Id, guid);
-            Assert.NotEqual(dto.EnginePower, domain.EnginePower);
-            Assert.NotEqual(dto.Name, domain.Name);
-            Assert.DoesNotMatch(dto.Crew.ToString(), domain.Crew.ToString());
-            Assert.DoesNotMatch(dto.ShipType, domain.ShipType);
-            Assert.Equal(dto.CreatedAt, domain.CreatedAt);
-            Assert.NotEqual(dto.UpdatedAt, domain.UpdatedAt);
+            Assert.Equal(domain.Id, result2.Id);
+            Assert.NotEqual(dto.EnginePower, result2.EnginePower);
+            Assert.NotEqual(dto.Name, result2.Name);
+            Assert.DoesNotMatch(dto.Crew.ToString(), result2.Crew.ToString());
+            Assert.DoesNotMatch(dto.ShipType, result2.ShipType);
+            Assert.Equal(dto.CreatedAt, result2.CreatedAt);
+            Assert.NotEqual(dto.UpdatedAt, result2.UpdatedAt);
         }
                 
         [Fact]
