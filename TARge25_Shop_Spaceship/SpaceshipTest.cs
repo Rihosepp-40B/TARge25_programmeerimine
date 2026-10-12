@@ -115,11 +115,11 @@ namespace TARge25_Shop.Tests
         [Fact]
         public async Task Should_UpdateSpaceshipById_WhenUpdatingData()
         {
-            // Ülesseade
-            var guid = new Guid("33601633-f62f-4e5e-8d3f-282a49921b9f");
-
+            // Ülesseade            
             SpaceshipDto dto = MockSpaceshipData();
+            var result = await Svc<ISpaceshipServices>().Create(dto);
 
+            var guid = (Guid)result.Id;
             SpaceshipDto domain = new();
 
             domain.Id = guid;
