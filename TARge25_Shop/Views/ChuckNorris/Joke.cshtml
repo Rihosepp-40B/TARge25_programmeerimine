@@ -1,0 +1,40 @@
+﻿@model TARge25_Shop.Models.ChuckNorris.ChuckNorrisViewModel
+
+@* Peab tegema vaate, kus oleks kõik vm muutujad välja toodud *@
+
+<div class="container">
+    <h2>Chuck Norris Joke</h2>
+    @* <h2>@Html.DisplayFor(model => model.Categories)</h2> *@
+    <hr />
+    <dl class="row text-dark">
+        <label asp-for="CreatedAt" class="col-sm-2 col-form-label"></label>
+        @Html.DisplayFor(model => model.CreatedAt)
+    </dl>
+    <dl class="row text-dark">
+        <label asp-for="IconUrl" class="col-sm-2 col-form-label"></label>
+        @Html.DisplayFor(model => model.IconUrl)
+    </dl>
+    <dl class="row text-dark">
+        <label asp-for="Id" class="col-sm-2 col-form-label"></label>
+        @Html.DisplayFor(model => model.Id)
+    </dl>
+    <dl class="row text-dark">
+        <label asp-for="UpdatedAt" class="col-sm-2 col-form-label"></label>
+        @Html.DisplayFor(model => model.UpdatedAt)
+    </dl>
+    <dl class="row text-dark">
+        <label asp-for="Url" class="col-sm-2 col-form-label"></label>
+        @Html.DisplayFor(model => model.Url)
+    </dl>
+    <dl class="row text-dark">
+        <label asp-for="Value" class="col-sm-2 col-form-label"></label>
+        @Html.DisplayFor(model => model.Value)
+    </dl>
+    <hr />
+
+    <div>
+        <form method="post">
+            <button asp-controller="ChuckNorris" asp-action="SearchChuckNorrisJoke" class="btn btn-primary">Joke</button>
+        </form>
+    </div>
+</div>
