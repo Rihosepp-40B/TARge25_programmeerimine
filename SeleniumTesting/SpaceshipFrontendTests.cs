@@ -1,21 +1,67 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Firefox;
 using Xunit;
+using Xunit.Abstractions;
+using Xunit.Sdk;
 
 namespace TARge25_Shop.SeleniumTesting
 {
+    // Järjestus - Järjesti klass, mis omab omadusi mille järgi teste saab järjestada
+    public class OrderAttribute : Attribute
+    {
+        public int Value { get; }
+        public OrderAttribute(int value)
+        {
+            Value = value;
+        }
+    }
+
+    //XunitJärjesti mis implementeerib ITestCaseOrdereri liidesest "OrderTestCase" meetodi, mis on see mis testide käivitamisel järjestab nad vastavalt "Order" omadustele
+    public class PriorityOrderer : ITestCaseOrderer
+    {
+        // Meetod võtab sisse kõik test cased järjestatuna, arendaja defineeritud järjesti järgi.
+        public IEnumerable<TTestCase> OrderTestCases<TTestCase>(IEnumerable<TTestCase> testCases)
+            where TTestCase : ITestCase
+        {
+            return testCases.OrderBy(test =>
+            {
+                // Leitakse omadus                                      Omaduse tüüp
+                var method = test.TestMethod.Method.GetCustomAttributes(typeof(OrderAttribute)).FirstOrDefault();
+
+                //Kui ei leita
+                if (method == null)
+                {
+                    //Antakse maksimaalne väärus, ehk test teostatakse kohe, ega ei panda teiste potensiaalsetet järjekorras olevate testide vahele
+                    return int.MaxValue;
+                }
+                // Kui leitakse
+                else
+                {
+                    // tagastatakse omaduse "Order" väärtus
+                    return method.GetNamedArgument<int>(nameof(OrderAttribute.Value));
+                }
+            }).ToList(); // Pannakse loendisse, ToList on linq meetod.
+        }
+    }
+
+    //Enne testi klassi kirjeldatakse ära mille järgi testid sorteeritakse tunnuse "TestCaseOrder'i" järgi. Sulgude vahel esimene väärtus on klassi asukoht ise, teine väärtus on nimeruum, kus klass asub
+    [TestCaseOrderer("TARge25_Shop.SeleniumTesting.PriorityOrderer", "TARge25_Shop.SeleniumTesting")]    
     public class SpaceshipFrontendTests
     {
+        
         [Fact]
+        [Order(1)] // Järjesti millel on väärtus "1", järjestatakse väiksem enne.
         public void Should_NavigateToCreate_AddSpaceship_WithCorrectData_ReturnToIndex()
         {
             //Sisestatavad andmed
             IWebDriver driver = SetupAndNavigatesIndex();
 
+            //tegevus
             IWebElement createInIndex = driver.FindElement(By.Id("CreateInIndex"));
             createInIndex.Click();
 
-            InsertSpaceshipData(driver);
+            //sisestatavad andmed
+            InsertSpaceshipData(driver, false);
 
             IWebElement cu_CreateSpaceship = driver.FindElement(By.Id("CU_CreateSpaceship"));
             cu_CreateSpaceship.Click();
@@ -40,28 +86,19 @@ namespace TARge25_Shop.SeleniumTesting
         }
 
         [Fact]
+        [Order(2)]
         public void Should_NavigateToDetails_OfASpaceship_WithPreviouslyCorrectData()
         {
             //Ülesehitus
             IWebDriver driver = SetupAndNavigatesIndex();
             ICollection<IWebElement> table = driver.FindElements(By.TagName("tr"));
 
-            //foreach (var tr in table)
-            //{
-
-            //    if(tr.FindElement(By.Id("IndexNameSpaceship")).Text == "i add Name for spaceship")
-            //    {
-            //        tr.FindElement(By.Id("IndexSpaceshipDetails")).Click();
-            //        break;
-            //    }
-            //}
-
             foreach (var tr in table)
             {
-                var nameElements = tr.FindElements(By.Id("IndexNameSpaceship"));
+                var rowElements = tr.FindElements(By.Id("IndexNameSpaceship"));
 
-                if (nameElements.Count > 0 &&
-                    nameElements[0].Text == "i add Name for spaceship")
+                if (rowElements.Count > 0 &&
+                    rowElements[0].Text == "i add Name for spaceship")
                 {
                     tr.FindElement(By.Id("IndexSpaceshipDetails")).Click();
                     break;
@@ -95,44 +132,109 @@ namespace TARge25_Shop.SeleniumTesting
             Assert.Equal("66666667", details_power);
         }
 
-        //[Fact]
-        //public void Should_UpdateDetails_OfASpaceShip_WithNewData()
-        //{
-        //    //ülesseade
-        //    IWebDriver driver = SetupAndNavigatesIndex();
+        [Fact]
+        [Order(3)]
+        public void Should_UpdateDetails_OfASpaceShip_WithNewData()
+        {
+            //ülesseade
+            IWebDriver driver = SetupAndNavigatesIndex();
+            ICollection<IWebElement> table = driver.FindElements(By.TagName("tr"));
 
-        //    //otsime üles kõik tabeli read, rida htmli tabelis tähistatakse "tr"iga
-        //    //ICollection<IWebElement> table = driver.FindElements(By.TagName("tr"));
-        //    var table = driver.FindElement(By.Id("IndexTable"));
-        //    List<IWebElement> rows = table.FindElements(By.TagName("tr")).ToList();
-        //    rows.RemoveAt(0);
-        //    //tsükkel käib kõik read läbi
+            //otsime üles kõik tabeli read, rida htmli tabelis tähistatakse "tr"iga
+            //ICollection<IWebElement> table = driver.FindElements(By.TagName("tr"));
+            foreach (var tr in table)
+            {
+                var rowElements = tr.FindElements(By.Id("IndexNameSpaceship"));
 
-        //    foreach (var row in rows)
-        //    {
+                if (rowElements.Count > 0 &&
+                    rowElements[0].Text == "i add Name for spaceship")
+                {
+                    tr.FindElement(By.Id("IndexSpaceshipUpdate")).Click();
+                    break;
+                }
+            }
+            //sisestatavad andmed muutuseks
+            InsertSpaceshipData(driver, true);
 
-        //        var locatedelement = row.FindElement(By.Id("IndexNameSpaceship"));
-        //        if (locatedelement.Text == "i add name for spaceship")
-        //        {
-        //            //siis vajuta selles reas asuvat details nuppu
-        //            var rowelement = row.FindElement(By.Id("IndexActionsSpaceship"));
-        //            var button = rowelement.FindElement(By.Id("IndexSpaceshipUpdate"));
-        //            button.Click();
-        //            //pärast õiget vajutust, tsükkel katkestatakse
-        //            //arvuti tudub
-        //            Thread.Sleep(500);
-        //            break;
-        //        }
-        //    }
-        //    //sisestatavad andmed
-        //    InsertSpaceshipData(driver, true);
+            IWebElement cu_UpdateSpaceship = driver.FindElement(By.Id("CU_UpdateSpaceship"));
+            cu_UpdateSpaceship.Click();
 
-        //    IWebElement cu_CreateSpaceship = driver.FindElement(By.Id("CU_CreateSpaceship"));
-        //    cu_CreateSpaceship.Click();
+        }
 
-        //    //arvuti tudub
-        //    Thread.Sleep(1000);
-        //}
+        [Fact]
+        [Order(4)]
+        public void Should_DeleteSpaceship_FromAppDeleteView()
+        {
+            //ülesseade
+            IWebDriver driver = SetupAndNavigatesIndex();
+            ICollection<IWebElement> table = driver.FindElements(By.TagName("tr"));
+
+            //otsime üles kõik tabeli read, rida htmli tabelis tähistatakse "tr"iga
+            //ICollection<IWebElement> table = driver.FindElements(By.TagName("tr"));
+            foreach (var tr in table)
+            {
+                var rowElements = tr.FindElements(By.Id("IndexNameSpaceship"));
+
+                if (rowElements.Count > 0 &&
+                    rowElements[0].Text == "This is a Spaceship")
+                {
+                    tr.FindElement(By.Id("IndexSpaceshipDelete")).Click();
+                    break;
+                }
+            }
+            
+            IWebElement cu_DeleteSpaceship = driver.FindElement(By.Id("D_ConfirmDeleteSpaceship"));
+            cu_DeleteSpaceship.Click();
+                       
+            int rowCount = driver.FindElements(By.TagName("tr")).Count();
+            Assert.True(rowCount < 2);
+        }
+
+        [Fact]
+        [Order(5)] // Järjesti millel on väärtus "1", järjestatakse väiksem enne.
+        public void Should_NavigateToCreate_AddSpaceship_WithCorrectData_ReturnToIndex_Proper()
+        {
+            //Sisestatavad andmed
+            IWebDriver driver = SetupAndNavigatesIndex();
+
+            //tegevus
+            IWebElement createInIndex = driver.FindElement(By.Id("CreateInIndex"));
+            createInIndex.Click();
+
+            //sisestatavad andmed, siin tagastub ka kasutatud nimi
+            string concreteName = InsertSpaceshipData_ReturnName(driver, false);
+
+            IWebElement cu_CreateSpaceship = driver.FindElement(By.Id("CU_CreateSpaceship"));
+            cu_CreateSpaceship.Click();
+
+            //Thread.Sleep(1000);
+
+            // Andmete kogumine pärast reloadi
+            IWebElement indexNameSpaceship = driver.FindElement(By.Id("IndexNameSpaceship"));
+            var spaceshipNameData = indexNameSpaceship.Text;
+
+            IWebElement indexTypeSpaceship = driver.FindElement(By.Id("IndexTypeSpaceship"));
+            var spaceshipTypeData = indexTypeSpaceship.Text;
+
+            IWebElement indexCrewSpaceship = driver.FindElement(By.Id("IndexCrewSpaceship"));
+            var spaceshipCrewData = indexCrewSpaceship.Text;
+
+            bool doesItExist = false;
+
+            // Otsi kõik read
+            //Otsi nime elemendist concretName võrdlusega
+            //Kui on desitexist on true
+
+            //Kontroll
+            //Assert.True(concreteName == indexNameSpaceship.Text);
+            Assert.True(true == doesItExist);
+
+            Assert.Equal(spaceshipNameData, "i add Name for spaceship");
+
+            Assert.True(spaceshipTypeData == "i add Type for spaceship");
+
+            Assert.Equal(spaceshipCrewData, "12345");
+        }
 
 
         private static IWebDriver SetupAndNavigatesIndex()
@@ -150,23 +252,87 @@ namespace TARge25_Shop.SeleniumTesting
             return driver;
         }
 
-        private void InsertSpaceshipData(IWebDriver driver)
+        private void InsertSpaceshipData(IWebDriver driver, bool isOneOrTwo = false)
         {
-            IWebElement cu_NameEntrySpaceship = driver.FindElement(By.Id("CU_NameEntrySpaceship"));
-            cu_NameEntrySpaceship.Clear();
-            cu_NameEntrySpaceship.SendKeys("i add Name for spaceship");
+            if (isOneOrTwo)
+            {
+                IWebElement cu_NameEntrySpaceship = driver.FindElement(By.Id("CU_NameEntrySpaceship"));
+                cu_NameEntrySpaceship.Clear();
+                cu_NameEntrySpaceship.SendKeys("This is a Spaceship");
 
-            IWebElement cu_ShipTypeEntrySpaceship = driver.FindElement(By.Id("CU_ShipTypeEntrySpaceship"));
-            cu_ShipTypeEntrySpaceship.Clear();
-            cu_ShipTypeEntrySpaceship.SendKeys("i add Type for spaceship");
+                IWebElement cu_ShipTypeEntrySpaceship = driver.FindElement(By.Id("CU_ShipTypeEntrySpaceship"));
+                cu_ShipTypeEntrySpaceship.Clear();
+                cu_ShipTypeEntrySpaceship.SendKeys("This is Type of Spaceship");
 
-            IWebElement cu_CrewEntrySpaceship = driver.FindElement(By.Id("CU_CrewEntrySpaceship"));
-            cu_CrewEntrySpaceship.Clear();
-            cu_CrewEntrySpaceship.SendKeys("12345");
+                IWebElement cu_CrewEntrySpaceship = driver.FindElement(By.Id("CU_CrewEntrySpaceship"));
+                cu_CrewEntrySpaceship.Clear();
+                cu_CrewEntrySpaceship.SendKeys("54321");
 
-            IWebElement cu_EnginePowerEntrySpaceship = driver.FindElement(By.Id("CU_EnginePowerEntrySpaceship"));
-            cu_EnginePowerEntrySpaceship.Clear();
-            cu_EnginePowerEntrySpaceship.SendKeys("66666667");
+                IWebElement cu_EnginePowerEntrySpaceship = driver.FindElement(By.Id("CU_EnginePowerEntrySpaceship"));
+                cu_EnginePowerEntrySpaceship.Clear();
+                cu_EnginePowerEntrySpaceship.SendKeys("777777776");
+            }
+            else
+            {
+                IWebElement cu_NameEntrySpaceship = driver.FindElement(By.Id("CU_NameEntrySpaceship"));
+                cu_NameEntrySpaceship.Clear();
+                cu_NameEntrySpaceship.SendKeys("i add Name for spaceship");
+
+                IWebElement cu_ShipTypeEntrySpaceship = driver.FindElement(By.Id("CU_ShipTypeEntrySpaceship"));
+                cu_ShipTypeEntrySpaceship.Clear();
+                cu_ShipTypeEntrySpaceship.SendKeys("i add Type for spaceship");
+
+                IWebElement cu_CrewEntrySpaceship = driver.FindElement(By.Id("CU_CrewEntrySpaceship"));
+                cu_CrewEntrySpaceship.Clear();
+                cu_CrewEntrySpaceship.SendKeys("12345");
+
+                IWebElement cu_EnginePowerEntrySpaceship = driver.FindElement(By.Id("CU_EnginePowerEntrySpaceship"));
+                cu_EnginePowerEntrySpaceship.Clear();
+                cu_EnginePowerEntrySpaceship.SendKeys("66666667");
+            }            
+        }
+
+        private string InsertSpaceshipData_ReturnName(IWebDriver driver, bool isOneOrTwo = false)
+        {
+            Guid returnGuid = Guid.NewGuid();
+            if (isOneOrTwo)
+            {
+                IWebElement cu_NameEntrySpaceship = driver.FindElement(By.Id("CU_NameEntrySpaceship"));
+                cu_NameEntrySpaceship.Clear();
+                cu_NameEntrySpaceship.SendKeys(returnGuid.ToString());
+
+                IWebElement cu_ShipTypeEntrySpaceship = driver.FindElement(By.Id("CU_ShipTypeEntrySpaceship"));
+                cu_ShipTypeEntrySpaceship.Clear();
+                cu_ShipTypeEntrySpaceship.SendKeys("This is Type of Spaceship");
+
+                IWebElement cu_CrewEntrySpaceship = driver.FindElement(By.Id("CU_CrewEntrySpaceship"));
+                cu_CrewEntrySpaceship.Clear();
+                cu_CrewEntrySpaceship.SendKeys("54321");
+
+                IWebElement cu_EnginePowerEntrySpaceship = driver.FindElement(By.Id("CU_EnginePowerEntrySpaceship"));
+                cu_EnginePowerEntrySpaceship.Clear();
+                cu_EnginePowerEntrySpaceship.SendKeys("777777776");
+            }
+            else
+            {
+                IWebElement cu_NameEntrySpaceship = driver.FindElement(By.Id("CU_NameEntrySpaceship"));
+                cu_NameEntrySpaceship.Clear();
+                cu_NameEntrySpaceship.SendKeys(returnGuid.ToString());
+
+                IWebElement cu_ShipTypeEntrySpaceship = driver.FindElement(By.Id("CU_ShipTypeEntrySpaceship"));
+                cu_ShipTypeEntrySpaceship.Clear();
+                cu_ShipTypeEntrySpaceship.SendKeys("i add Type for spaceship");
+
+                IWebElement cu_CrewEntrySpaceship = driver.FindElement(By.Id("CU_CrewEntrySpaceship"));
+                cu_CrewEntrySpaceship.Clear();
+                cu_CrewEntrySpaceship.SendKeys("12345");
+
+                IWebElement cu_EnginePowerEntrySpaceship = driver.FindElement(By.Id("CU_EnginePowerEntrySpaceship"));
+                cu_EnginePowerEntrySpaceship.Clear();
+                cu_EnginePowerEntrySpaceship.SendKeys("66666667");
+            }
+
+            return returnGuid.ToString();
         }
     }
 }

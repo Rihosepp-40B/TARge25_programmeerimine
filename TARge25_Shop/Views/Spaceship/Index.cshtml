@@ -11,7 +11,7 @@
     Spaceships
 </div>
 <form method="get">
-    <table class="table table-hover">
+    <table class="table table-hover" id="IndexTable">
         <thead>
             <tr>
                 <th id="IndexRowNumberColumn" scope="col">Nr</th>
@@ -32,6 +32,7 @@
                     <td id="IndexBuiltDateSpaceship">@spaceship.CreatedAt</td>
                     <td id="IndexCrewSpaceship">@spaceship.Crew</td>
                     <td id="IndexActionSpaceship">
+                        <span id="IndexSpaceshipId" hidden>@spaceship.Id</span>
                         <div class="action-buttons">
                             <a asp-action="details" asp-route-id="@spaceship.Id" class="btn btn-outline-primary" id="IndexSpaceshipDetails">Details</a>
                             <a asp-action="update" asp-route-id="@spaceship.Id" class="btn btn-outline-primary" id="IndexSpaceshipUpdate">Update</a>
