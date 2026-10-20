@@ -1,0 +1,19 @@
+﻿@model TARge25_Shop.Models.Cocktail.CocktailSearchViewModel
+
+<div class="container">
+    <h2>Cocktails</h2>
+    <form asp-action="SearchCocktail" method="post">
+        <div class="container">
+            <div class="form-group col-md-5 mt-6">
+                <h3>Type in the name of the cocktail.</h3>
+                <input asp-for="CocktailName" class="form-control" />
+                <span asp-validation-for="CocktailName" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="container">
+            <div class="form-group col-md-5">
+                <button type="submit" class="btn btn-primary mt-2">Search</button>
+            </div>
+        </div>
+    </form>
+</div>

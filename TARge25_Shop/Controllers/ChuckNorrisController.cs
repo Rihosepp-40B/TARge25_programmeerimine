@@ -18,8 +18,7 @@ namespace TARge25_Shop.Controllers
         {
             return View();
         }
-
-        [HttpPost]
+                
         public IActionResult SearchChuckNorrisJoke()
         {
             return RedirectToAction(nameof(Joke));
