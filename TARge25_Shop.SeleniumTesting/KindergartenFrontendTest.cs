@@ -377,8 +377,8 @@ namespace TARge25_Shop.SeleniumTesting
 
             foreach (var row in rowsOfTable)
             {
-                var locatedelement = row.FindElement(By.Id("I_Kg_GN"));
-                if (locatedelement.Text == thisRunGuid)
+                var locatedelement = row.FindElement(By.Id("I_Kg_KN"));
+                if (locatedelement.Text == startKN)
                 {
                     doesItExist = true;
                     isKNupdated = false;
