@@ -250,6 +250,7 @@ namespace TARge25_Shop.SeleniumTesting
 
         [Fact]
         [Order(4)]
+        //Selle testiga kontrollime, et lasteaia uuendammisel ei uuendata lasteaeda kui grupinimi on tühiks või tühjus
         public void ShouldNot_UpdateThisKindergarten_WhenGroupNameIsWhitespace()
         {
             //Ülesehitus
@@ -327,6 +328,7 @@ namespace TARge25_Shop.SeleniumTesting
         
         [Fact]
         [Order(5)]
+        // Selles testis kontrollime, et lasteaeda ei uuendata kui lasteaia nimi sisestatakse tühikuna
         public void ShouldNot_UpdateThisKindergarten_WhenKindergartenNameIsWhitespace()
         {
             //Ülesehitus
@@ -404,6 +406,7 @@ namespace TARge25_Shop.SeleniumTesting
         
         [Fact]
         [Order(6)]
+        //Selle testiga kontrollime, et lasteaeda ei uuendata kui õpetajanimi on tühik või tühjus
         public void ShouldNot_UpdateThisKindergarten_WhenTeacherNameIsWhitespace()
         {
             //Ülesehitus
@@ -481,6 +484,7 @@ namespace TARge25_Shop.SeleniumTesting
         
         [Fact]
         [Order(7)]
+        //Selle testiga kontrollime, et kui lastearv on negatiivne, siis uuendatakse lastead lasteaervuga null.
         public void Should_UpdateThisKindergarten_WithZeroChildren_WhenChildrenCountNegative()
         {
             //Ülesehitus
