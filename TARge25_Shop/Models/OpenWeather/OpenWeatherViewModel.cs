@@ -27,8 +27,6 @@
 
         public string? Name { get; set; }
 
-        //public string FormattedTemp => Main != null ? $"{Math.Round(Main.Temp)} °C" : string.Empty;
-
         public string IconUrl => !string.IsNullOrEmpty(WeatherIcon) ? $"https://openweathermap.org/img/wn/{WeatherIcon}@2x.png" : string.Empty;
     }
 }
