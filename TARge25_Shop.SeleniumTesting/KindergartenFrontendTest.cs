@@ -151,8 +151,8 @@ namespace TARge25_Shop.SeleniumTesting
             //sisestatavad andmed
             InsertKindergartenData(driver, thisRunGuid, true);
 
-            IWebElement cu_UpdateSpaceship = driver.FindElement(By.Id("CU_Kg_UpdBtn"));
-            cu_UpdateSpaceship.Click();
+            IWebElement cu_UpdateKg = driver.FindElement(By.Id("CU_Kg_UpdBtn"));
+            cu_UpdateKg.Click();
 
             //andmete kogumine pärast reloadi
             var tableOfIndex = driver.FindElement(By.Id("IndexTable"));
@@ -191,9 +191,9 @@ namespace TARge25_Shop.SeleniumTesting
             Assert.True(kindergartenTNameData == "a Teacher");
             Assert.False(string.IsNullOrEmpty(kindergartenTNameData));
         }
-
+                
         [Fact]
-        [Order(4)]
+        [Order(5)]
         public void Should_DeleteThisKindergarten_FromAppVIADeleteView()
         {
             //Ülesehitus
@@ -215,8 +215,8 @@ namespace TARge25_Shop.SeleniumTesting
                 }
             }
 
-            IWebElement d_DeleteSpaceship = driver.FindElement(By.Id("Del_Kg_Del"));
-            d_DeleteSpaceship.Click();
+            IWebElement d_DeleteKg = driver.FindElement(By.Id("Del_Kg_Del"));
+            d_DeleteKg.Click();
 
             bool isDeleted = false;
 
@@ -243,6 +243,95 @@ namespace TARge25_Shop.SeleniumTesting
             Assert.False(!isDeleted);
         }
 
+         //
+        // ENDA 4 testi tulevad alates siit
+        //---------------------------||-||-||-||
+        //---------------------------\/-\/-\/-\/
+
+        [Fact]
+        [Order(4)]
+        public void ShouldNot_UpdateThisKindergarten_WhenGroupNameIsWhitespace()
+        {
+            //Ülesehitus
+            IWebDriver driver = SetupAndNavigateIndex();
+            var table = driver.FindElement(By.Id("IndexTable"));
+            List<IWebElement> rows = table.FindElements(By.TagName("tr")).ToList();
+            rows.RemoveAt(0);
+            bool doesItExist = false;
+            bool isGNupdated = true;
+            string startKN = "";
+            string startTN = "";
+
+
+            //tsükkel käib kõik read läbi            
+            foreach (var row in rows)
+            {
+                var findKgGN = row.FindElement(By.Id("I_Kg_GN"));
+                if (findKgGN.Text == thisRunGuid)
+                {
+                    startKN = row.FindElement(By.Id("I_Kg_KN")).Text;
+                    startTN = row.FindElement(By.Id("I_Kg_TN")).Text;
+                    row.FindElement(By.Id("I_Kg_UpdBtn")).Click();
+                    break;
+                }
+            }
+
+            //sisestatavad andmed
+            InsertKindergartenData(driver, thisRunGuid, true);
+
+            IWebElement cu_KgGN_Entry = driver.FindElement(By.Id("CU_Kg_GN"));
+            cu_KgGN_Entry.Clear();
+            cu_KgGN_Entry.SendKeys(" ");
+
+
+            IWebElement cu_UpdateKg = driver.FindElement(By.Id("CU_Kg_UpdBtn"));
+            cu_UpdateKg.Click();
+
+            //andmete kogumine pärast reloadi
+            var tableOfIndex = driver.FindElement(By.Id("IndexTable"));
+            List<IWebElement> rowsOfTable = tableOfIndex.FindElements(By.TagName("tr")).ToList();
+            rowsOfTable.RemoveAt(0);
+
+            string dataKgGN = "";
+            string dataKgKN = "";
+            string dataKgTN = "";
+            string dataKgCA = "";
+
+            foreach (var row in rowsOfTable)
+            {
+                var locatedelement = row.FindElement(By.Id("I_Kg_GN"));
+                if (locatedelement.Text == thisRunGuid)
+                {
+                    doesItExist = true;
+                    isGNupdated = false;
+                    dataKgGN = thisRunGuid;
+                    dataKgKN = row.FindElement(By.Id("I_Kg_KN")).Text;
+                    dataKgTN = row.FindElement(By.Id("I_Kg_TN")).Text;
+                    dataKgCA = row.FindElement(By.Id("I_Kg_CA")).Text;
+                    break;
+                }
+            }
+
+            driver.Quit();
+
+            ////arvuti tudub
+            //Thread.Sleep(1000);
+            Assert.True(doesItExist);
+            Assert.NotNull(dataKgGN);
+            Assert.False(isGNupdated);
+            Assert.Equal(thisRunGuid, dataKgGN);
+            Assert.False(string.IsNullOrEmpty(dataKgGN));
+            Assert.False(string.IsNullOrEmpty(dataKgKN));
+            Assert.False(string.IsNullOrEmpty(dataKgTN));
+            Assert.Equal(dataKgKN, startKN);
+            Assert.Equal(dataKgTN, startTN);
+        }
+        
+        //
+        // Abifunktsioonid
+        //---------------------------||-||-||-||
+        //---------------------------\/-\/-\/-\/
+
         private static IWebDriver SetupAndNavigateIndex()
         {
             //Firefoxi käskiv ja juhtiv draiver
@@ -257,7 +346,7 @@ namespace TARge25_Shop.SeleniumTesting
             //Selle elemendiga tehtav tegevus
             return driver;
         }
-
+       
         private void InsertKindergartenData(IWebDriver driver, string name = null, bool isOneOrTwo = false)
         {
             if (isOneOrTwo)
