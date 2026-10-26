@@ -193,7 +193,7 @@ namespace TARge25_Shop.SeleniumTesting
         }
                 
         [Fact]
-        [Order(7)]
+        [Order(8)]
         public void Should_DeleteThisKindergarten_FromAppVIADeleteView()
         {
             //Ülesehitus
@@ -356,9 +356,9 @@ namespace TARge25_Shop.SeleniumTesting
             //sisestatavad andmed
             InsertKindergartenData(driver, thisRunGuid, true);
 
-            IWebElement cu_KgGN_Entry = driver.FindElement(By.Id("CU_Kg_KN"));
-            cu_KgGN_Entry.Clear();
-            cu_KgGN_Entry.SendKeys(" ");
+            IWebElement cu_KgKN_Entry = driver.FindElement(By.Id("CU_Kg_KN"));
+            cu_KgKN_Entry.Clear();
+            cu_KgKN_Entry.SendKeys(" ");
 
 
             IWebElement cu_UpdateKg = driver.FindElement(By.Id("CU_Kg_UpdBtn"));
@@ -412,7 +412,7 @@ namespace TARge25_Shop.SeleniumTesting
             List<IWebElement> rows = table.FindElements(By.TagName("tr")).ToList();
             rows.RemoveAt(0);
             bool doesItExist = false;
-            bool isKNupdated = true;
+            bool isTNupdated = true;
             string startKN = "";
             string startTN = "";
 
@@ -433,9 +433,9 @@ namespace TARge25_Shop.SeleniumTesting
             //sisestatavad andmed
             InsertKindergartenData(driver, thisRunGuid, true);
 
-            IWebElement cu_KgGN_Entry = driver.FindElement(By.Id("CU_Kg_TN"));
-            cu_KgGN_Entry.Clear();
-            cu_KgGN_Entry.SendKeys(" ");
+            IWebElement cu_KgTN_Entry = driver.FindElement(By.Id("CU_Kg_TN"));
+            cu_KgTN_Entry.Clear();
+            cu_KgTN_Entry.SendKeys(" ");
 
 
             IWebElement cu_UpdateKg = driver.FindElement(By.Id("CU_Kg_UpdBtn"));
@@ -457,7 +457,7 @@ namespace TARge25_Shop.SeleniumTesting
                 if (locatedelement.Text == startTN)
                 {
                     doesItExist = true;
-                    isKNupdated = false;
+                    isTNupdated = false;
                     dataKgGN = thisRunGuid;
                     dataKgKN = row.FindElement(By.Id("I_Kg_KN")).Text;
                     dataKgTN = row.FindElement(By.Id("I_Kg_TN")).Text;
@@ -470,13 +470,138 @@ namespace TARge25_Shop.SeleniumTesting
 
             Assert.True(doesItExist);
             Assert.NotNull(dataKgGN);
-            Assert.False(isKNupdated);
+            Assert.False(isTNupdated);
             Assert.Equal(thisRunGuid, dataKgGN);
             Assert.False(string.IsNullOrEmpty(dataKgGN));
             Assert.False(string.IsNullOrEmpty(dataKgKN));
             Assert.False(string.IsNullOrEmpty(dataKgTN));
             Assert.Equal(dataKgKN, startKN);
             Assert.Equal(dataKgTN, startTN);
+        }
+        
+        [Fact]
+        [Order(7)]
+        public void Should_UpdateThisKindergarten_WithZeroChildren_WhenChildrenCountNegative()
+        {
+            //Ülesehitus
+            IWebDriver driver = SetupAndNavigateIndex();
+            var table = driver.FindElement(By.Id("IndexTable"));
+            List<IWebElement> rows = table.FindElements(By.TagName("tr")).ToList();
+            rows.RemoveAt(0);
+            bool doesItExist = false;
+            string startKN = "";
+            string startTN = "";
+            int startCC = 0;
+
+            foreach (var row in rows)
+            {
+
+                var findGN = row.FindElement(By.Id("I_Kg_GN"));
+                if (findGN.Text == thisRunGuid)
+                {
+                    row.FindElement(By.Id("I_Kg_DetBtn")).Click();
+                    break;
+                }
+            }
+
+            IWebElement det_Kg_CC = driver.FindElement(By.Id("Det_Kg_CC"));
+            startCC = int.Parse(det_Kg_CC.Text);
+
+            IWebElement det_Kg_KN = driver.FindElement(By.Id("Det_Kg_KN"));
+            startKN = det_Kg_KN.Text;
+
+            IWebElement det_Kg_TN = driver.FindElement(By.Id("Det_Kg_TN"));
+            startTN = det_Kg_TN.Text;
+
+            IWebElement det_Back = driver.FindElement(By.Id("Det_Kg_Back"));
+            det_Back.Click();
+
+
+            var table2 = driver.FindElement(By.Id("IndexTable"));
+            var rows2 = table2.FindElements(By.TagName("tr")).ToList();
+            rows2.RemoveAt(0);
+
+            //tsükkel käib kõik read läbi            
+            foreach (var row in rows2)
+            {
+                var findKgGN = row.FindElements(By.Id("I_Kg_GN"));
+                if (findKgGN.Count == 0)
+                {
+                    continue;
+                }
+
+                if (findKgGN[0].Text == thisRunGuid)
+                {
+                    row.FindElement(By.Id("I_Kg_UpdBtn")).Click();
+                    break;
+                }
+            }
+
+            //sisestatavad andmed
+
+            IWebElement cu_KgCC_Entry = driver.FindElement(By.Id("CU_Kg_CC"));
+            cu_KgCC_Entry.Clear();
+            cu_KgCC_Entry.SendKeys("-10");
+
+            IWebElement cu_KgKN_Entry = driver.FindElement(By.Id("CU_Kg_KN"));
+            cu_KgKN_Entry.Clear();
+            cu_KgKN_Entry.SendKeys("Not another one");
+
+            IWebElement cu_KgTN_Entry = driver.FindElement(By.Id("CU_Kg_TN"));
+            cu_KgTN_Entry.Clear();
+            cu_KgTN_Entry.SendKeys("Teacher Teacher Teacher");
+
+
+            IWebElement cu_UpdateKg = driver.FindElement(By.Id("CU_Kg_UpdBtn"));
+            cu_UpdateKg.Click();
+
+            //andmete kogumine pärast reloadi
+
+            var table3 = driver.FindElement(By.Id("IndexTable"));
+            var rows3 = table3.FindElements(By.TagName("tr")).ToList();
+            rows2.RemoveAt(0);
+
+            //tsükkel käib kõik read läbi            
+            foreach (var row in rows3)
+            {
+                var findKgGN = row.FindElements(By.Id("I_Kg_GN"));
+                if (findKgGN.Count == 0)
+                {
+                    continue;
+                }
+                if (findKgGN[0].Text == thisRunGuid)
+                {
+                    doesItExist = true;
+                    row.FindElement(By.Id("I_Kg_DetBtn")).Click();
+                    break;
+                }
+            }
+
+            IWebElement det_Kg_GN = driver.FindElement(By.Id("Det_Kg_GN"));
+            string details_GN = det_Kg_GN.Text;
+
+            IWebElement det_Kg_CC2 = driver.FindElement(By.Id("Det_Kg_CC"));
+            int details_CC = int.Parse(det_Kg_CC2.Text);
+
+            IWebElement det_Kg_KN2 = driver.FindElement(By.Id("Det_Kg_KN"));
+            string details_KN = det_Kg_KN2.Text;
+
+            IWebElement det_Kg_TN2 = driver.FindElement(By.Id("Det_Kg_TN"));
+            string details_TN = det_Kg_TN2.Text;
+
+            driver.Quit();
+
+            Assert.True(doesItExist);
+            Assert.NotNull(details_GN);
+            Assert.Equal(thisRunGuid, details_GN);
+            Assert.True(startCC > 0);
+            Assert.False(string.IsNullOrEmpty(details_GN));
+            Assert.False(string.IsNullOrEmpty(details_KN));
+            Assert.False(string.IsNullOrEmpty(details_TN));
+            Assert.True(details_CC == 0);
+            Assert.NotEqual(startCC, details_CC);
+            Assert.NotEqual(details_KN, startKN);
+            Assert.NotEqual(details_TN, startTN);
         }
         
         //
