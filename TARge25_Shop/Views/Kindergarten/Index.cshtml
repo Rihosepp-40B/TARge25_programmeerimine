@@ -5,13 +5,13 @@
 }
 
 <div>
-    <a asp-action="create" asp-controller="kindergarten" type="submit" class="btn btn-primary">Create</a>
+    <a asp-action="create" asp-controller="kindergarten" type="submit" class="btn btn-primary" id="I_Kg_CreBtn">Create</a>
 </div>
 <div class="h1">
     Kindergartens
 </div>
 <form method="get">
-    <table class="table table-hover">
+    <table class="table table-hover" id="IndexTable">
         <thead>
             <tr>
                 <th scope="col">Nr</th>
@@ -27,15 +27,16 @@
             {
                 <tr>
                     <td>@(rowNumber++)</td>
-                    <td>@kindergarten.GroupName</td>
-                    <td>@kindergarten.KindergartenName</td>
-                    <td>@kindergarten.TeacherName</td>
-                    <td>@kindergarten.CreatedAt</td>
-                    <td>
+                    <td id="I_Kg_GN">@kindergarten.GroupName</td>
+                    <td id="I_Kg_KN">@kindergarten.KindergartenName</td>
+                    <td id="I_Kg_TN">@kindergarten.TeacherName</td>
+                    <td id="I_Kg_CA">@kindergarten.CreatedAt</td>
+                    <td id="I_Kg_Action">
+                        <span id="I_Kg_Id" hidden>@kindergarten.Id</span>
                         <div class="action-buttons">
-                            <a asp-action="details" asp-route-id="@kindergarten.Id" class="btn btn-outline-primary">Details</a>
-                            <a asp-action="update" asp-route-id="@kindergarten.Id" class="btn btn-outline-primary">Update</a>
-                            <a asp-action="delete" asp-route-id="@kindergarten.Id" class="btn btn-outline-danger">Delete</a>
+                            <a asp-action="details" asp-route-id="@kindergarten.Id" class="btn btn-outline-primary" id="I_Kg_DetBtn">Details</a>
+                            <a asp-action="update" asp-route-id="@kindergarten.Id" class="btn btn-outline-primary" id="I_Kg_UpdBtn">Update</a>
+                            <a asp-action="delete" asp-route-id="@kindergarten.Id" class="btn btn-outline-danger" id="I_Kg_DelBtn">Delete</a>
                         </div>
                     </td>
                 </tr>
