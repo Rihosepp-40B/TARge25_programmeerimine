@@ -1,0 +1,47 @@
+﻿@model TARge25_Shop.Models.OpenWeather.OpenWeatherViewModel
+
+<div class="container card col-md-4 text-bg-dark shadow-lg">
+    <h2>Current weather @Model.Name, @Model.SysCountry </h2>
+    <hr />
+    <div class="container">
+        <div class="d-flex align-items-center gap-3 mb-3">
+            @if (Model.IconUrl != null)
+            {
+                <img src="@Model.IconUrl" alt="@Model.WeatherDescription" width="100" height="100" />
+            }
+            <div>
+                <p class="display-6 mb-0">@Model.MainTemp.ToString("0.#") °C</p>
+                <p class="mb-0">@Model.WeatherDescription</p>
+            </div>
+        </div>
+        <dl class="row">
+            @if (Model.MainFeelsLike.HasValue)
+            {
+                <dt class="col-sm-5">Feels like:</dt>
+                <dd class="col-sm-7">@Model.MainFeelsLike.Value.ToString("0.#") °C</dd>
+            }
+            @if (Model.MainHumidity.HasValue)
+            {
+                <dt class="col-sm-5">Humidity</dt>
+                <dd class="col-sm-7">@Model.MainHumidity %</dd>
+            }
+            @if (Model.MainPressure.HasValue)
+            {
+                <dt class="col-sm-5">Pressure</dt>
+                <dd class="col-sm-7">@Model.MainPressure hPa</dd>
+            }
+            @if (Model.WindSpeed.HasValue)
+            {
+                <dt class="col-sm-5">Wind speed</dt>
+                <dd class="col-sm-7">@Model.WindSpeed.Value.ToString("0.#") m/s</dd>
+            }
+            @if (Model.CloudsAll.HasValue)
+            {
+                <dt class="col-sm-5">Cloudiness</dt>
+                <dd class="col-sm-7">@Model.CloudsAll %</dd>
+            }
+        </dl>
+        <a asp-action="Index" class="btn btn-secondary">Back</a>
+
+    </div>
+</div>
