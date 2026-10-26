@@ -193,7 +193,7 @@ namespace TARge25_Shop.SeleniumTesting
         }
                 
         [Fact]
-        [Order(6)]
+        [Order(7)]
         public void Should_DeleteThisKindergarten_FromAppVIADeleteView()
         {
             //Ülesehitus
@@ -325,7 +325,6 @@ namespace TARge25_Shop.SeleniumTesting
             Assert.Equal(dataKgTN, startTN);
         }
         
-
         [Fact]
         [Order(5)]
         public void ShouldNot_UpdateThisKindergarten_WhenKindergartenNameIsWhitespace()
@@ -379,6 +378,83 @@ namespace TARge25_Shop.SeleniumTesting
             {
                 var locatedelement = row.FindElement(By.Id("I_Kg_KN"));
                 if (locatedelement.Text == startKN)
+                {
+                    doesItExist = true;
+                    isKNupdated = false;
+                    dataKgGN = thisRunGuid;
+                    dataKgKN = row.FindElement(By.Id("I_Kg_KN")).Text;
+                    dataKgTN = row.FindElement(By.Id("I_Kg_TN")).Text;
+                    dataKgCA = row.FindElement(By.Id("I_Kg_CA")).Text;
+                    break;
+                }
+            }
+
+            driver.Quit();
+
+            Assert.True(doesItExist);
+            Assert.NotNull(dataKgGN);
+            Assert.False(isKNupdated);
+            Assert.Equal(thisRunGuid, dataKgGN);
+            Assert.False(string.IsNullOrEmpty(dataKgGN));
+            Assert.False(string.IsNullOrEmpty(dataKgKN));
+            Assert.False(string.IsNullOrEmpty(dataKgTN));
+            Assert.Equal(dataKgKN, startKN);
+            Assert.Equal(dataKgTN, startTN);
+        }
+        
+        [Fact]
+        [Order(6)]
+        public void ShouldNot_UpdateThisKindergarten_WhenTeacherNameIsWhitespace()
+        {
+            //Ülesehitus
+            IWebDriver driver = SetupAndNavigateIndex();
+            var table = driver.FindElement(By.Id("IndexTable"));
+            List<IWebElement> rows = table.FindElements(By.TagName("tr")).ToList();
+            rows.RemoveAt(0);
+            bool doesItExist = false;
+            bool isKNupdated = true;
+            string startKN = "";
+            string startTN = "";
+
+
+            //tsükkel käib kõik read läbi            
+            foreach (var row in rows)
+            {
+                var findKgGN = row.FindElement(By.Id("I_Kg_GN"));
+                if (findKgGN.Text == thisRunGuid)
+                {
+                    startKN = row.FindElement(By.Id("I_Kg_KN")).Text;
+                    startTN = row.FindElement(By.Id("I_Kg_TN")).Text;
+                    row.FindElement(By.Id("I_Kg_UpdBtn")).Click();
+                    break;
+                }
+            }
+
+            //sisestatavad andmed
+            InsertKindergartenData(driver, thisRunGuid, true);
+
+            IWebElement cu_KgGN_Entry = driver.FindElement(By.Id("CU_Kg_TN"));
+            cu_KgGN_Entry.Clear();
+            cu_KgGN_Entry.SendKeys(" ");
+
+
+            IWebElement cu_UpdateKg = driver.FindElement(By.Id("CU_Kg_UpdBtn"));
+            cu_UpdateKg.Click();
+
+            //andmete kogumine pärast reloadi
+            var tableOfIndex = driver.FindElement(By.Id("IndexTable"));
+            List<IWebElement> rowsOfTable = tableOfIndex.FindElements(By.TagName("tr")).ToList();
+            rowsOfTable.RemoveAt(0);
+
+            string dataKgGN = "";
+            string dataKgKN = "";
+            string dataKgTN = "";
+            string dataKgCA = "";
+
+            foreach (var row in rowsOfTable)
+            {
+                var locatedelement = row.FindElement(By.Id("I_Kg_TN"));
+                if (locatedelement.Text == startTN)
                 {
                     doesItExist = true;
                     isKNupdated = false;
