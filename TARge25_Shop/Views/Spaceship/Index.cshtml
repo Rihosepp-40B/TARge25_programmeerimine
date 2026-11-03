@@ -3,44 +3,45 @@
 @{
     int rowNumber = 1;
 }
-
-<div>
-    <a asp-action="create" asp-controller="spaceship" type="submit" class="btn btn-primary">Create</a>
-</div>
-<div class="h1">
-    Spaceships
-</div>
-<form method="get">
-    <table class="table table-hover">
-        <thead>
-            <tr>
-                <th scope="col">Nr</th>
-                <th scope="col">Name</th>
-                <th scope="col">Type</th>
-                <th scope="col">Built Date</th>
-                <th scope="col">Crew</th>
-                <th scope="col"></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var spaceship in Model)
-            {
+<div class="data-page">
+    <div>
+        <a asp-action="create" asp-controller="spaceship" type="submit" class="btn btn-data-create">Create</a>
+    </div>
+    <div class="h1">
+        Spaceships
+    </div>
+    <form method="get">
+        <table class="table data-table">
+            <thead>
                 <tr>
-                    <td>@(rowNumber++)</td>
-                    <td>@spaceship.Name</td>
-                    <td>@spaceship.ShipType</td>
-                    <td>@spaceship.CreatedAt</td>
-                    <td>@spaceship.Crew</td>
-                    <td>
-                        <div class="action-buttons">
-                            <a asp-action="details" asp-route-id="@spaceship.Id" class="btn btn-outline-primary">Details</a>
-                            <a asp-action="update" asp-route-id="@spaceship.Id" class="btn btn-outline-primary">Update</a>
-                            <a asp-action="delete" asp-route-id="@spaceship.Id" class="btn btn-outline-danger">Delete</a>
-                        </div>
-                    </td>
+                    <th scope="col">Nr</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">Built Date</th>
+                    <th scope="col">Crew</th>
+                    <th scope="col"></th>
                 </tr>
-                @* rowNumber += 1; See ei ole vaja kuna üleval tegime ++ *@
-            }
-        </tbody>
-    </table>
-</form>
+            </thead>
+            <tbody>
+                @foreach (var spaceship in Model)
+                {
+                    <tr>
+                        <td>@(rowNumber++)</td>
+                        <td>@spaceship.Name</td>
+                        <td>@spaceship.ShipType</td>
+                        <td>@spaceship.CreatedAt</td>
+                        <td>@spaceship.Crew</td>
+                        <td>
+                            <div class="data-actions">
+                                <a asp-action="details" asp-route-id="@spaceship.Id" class="btn btn-data-action btn-data-details">Details</a>
+                                <a asp-action="update" asp-route-id="@spaceship.Id" class="btn btn-data-action btn-data-update">Update</a>
+                                <a asp-action="delete" asp-route-id="@spaceship.Id" class="btn btn-data-action btn-data-delete">Delete</a>
+                            </div>
+                        </td>
+                    </tr>
+                    @* rowNumber += 1; See ei ole vaja kuna üleval tegime ++ *@
+                }
+            </tbody>
+        </table>
+    </form>
+</div>

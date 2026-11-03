@@ -1,31 +1,546 @@
+
+/* ==========================================
+   1. KOOPA PÕHIVÄRVID
+   ========================================== */
+
+:root {
+    --cave-black: #080706;
+    --cave-rock: #19110d;
+    --lava-orange: #ff6500;
+    --lava-gold: #ffb52e;
+    --lava-white: #fff0b0;
+    --cave-text: #f4dfba;
+}
+
 html {
-  font-size: 14px;
+    min-height: 100%;
+    background: var(--cave-black);
 }
 
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+body.cave-theme {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    isolation: isolate;
+    overflow-x: clip;
+    color: var(--cave-text);
+    /* Koopa taustapilt */
+    background: linear-gradient( rgba(5, 4, 3, 0.30), rgba(5, 4, 3, 0.48) ), url("/images/cave-background.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    /* Taustapildi soojad valguslaigud, mis aeglaselt hingavad */
+    body.cave-theme::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        /* Valguskohad on paigutatud taustapildi oranžide/kollaste piirkondade järgi */
+        background: radial-gradient( ellipse at 8% 48%, rgba(255, 105, 0, 0.38) 0%, rgba(255, 75, 0, 0.16) 20%, transparent 39% ), radial-gradient( ellipse at 35% 57%, rgba(255, 115, 0, 0.34) 0%, rgba(255, 70, 0, 0.13) 22%, transparent 40% ), radial-gradient( ellipse at 70% 40%, rgba(255, 175, 35, 0.38) 0%, rgba(255, 100, 0, 0.16) 24%, transparent 43% ), radial-gradient( ellipse at 77% 68%, rgba(255, 135, 0, 0.34) 0%, rgba(255, 70, 0, 0.13) 22%, transparent 40% );
+        mix-blend-mode: screen;
+        opacity: 0.5;
+        animation: caveGlowBreathing 7s ease-in-out infinite alternate;
+    }
+
+/* ==========================================
+   2. TAUSTAL HÕLJUVATE SÄDEMETE KIHT
+   ========================================== */
+
+#ember-layer {
+    position: fixed;
+    inset: 0;
+    z-index: 5;
+    overflow: hidden;
+    pointer-events: none;
 }
 
-html {
-  position: relative;
-  min-height: 100%;
+.ember {
+    position: absolute;
+    bottom: -15px;
+    left: var(--x);
+    width: var(--size);
+    height: var(--size);
+    border-radius: 50%;
+    background: #ffb52e;
+    opacity: 0;
+    box-shadow: 0 0 4px #ffb52e, 0 0 10px #ff5a00, 0 0 18px rgba(255, 60, 0, 0.65);
+    animation: emberFloat var(--duration) linear var(--delay) infinite;
 }
 
-body {
-  margin-bottom: 60px;
+@keyframes emberFloat {
+    0% {
+        transform: translate3d(0, 0, 0) scale(0.5);
+        opacity: 0;
+    }
+
+    12% {
+        opacity: var(--brightness);
+    }
+
+    48% {
+        transform: translate3d(var(--drift), -50vh, 0) scale(1);
+        opacity: var(--brightness);
+    }
+
+    85% {
+        opacity: 0.6;
+    }
+
+    100% {
+        transform: translate3d( calc(var(--drift) * -0.45), -110vh, 0 ) scale(0.15);
+        opacity: 0;
+    }
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+/* ==========================================
+   3. ÜLEMINE MENÜ
+   ========================================== */
+
+.cave-header {
+    position: relative;
+    z-index: 10;
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+.cave-navbar {
+    padding: 12px 22px;
+    background: linear-gradient( 180deg, rgba(13, 9, 7, 0.97), rgba(7, 6, 5, 0.94) );
+    border-bottom: 1px solid rgba(255, 99, 0, 0.75);
+    box-shadow: 0 2px 12px rgba(255, 68, 0, 0.3), 0 5px 30px rgba(0, 0, 0, 0.8);
+}
+
+/* Rakenduse nimi */
+
+.fiery-brand {
+    color: var(--lava-gold) !important;
+    font-size: 1.65rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-shadow: 0 0 4px #ffb52e, 0 0 10px #ff6900, 0 0 22px rgba(255, 45, 0, 0.75);
+    animation: brandGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes brandGlow {
+    from {
+        text-shadow: 0 0 4px #ffb52e, 0 0 10px #ff6900;
+    }
+
+    to {
+        text-shadow: 0 0 6px #fff0b0, 0 0 14px #ff8500, 0 0 27px #ff3500;
+    }
+}
+
+/* ==========================================
+   4. MENÜÜKIRJED JA PIDEV HÕÕGUMINE
+   ========================================== */
+
+.fiery-link {
+    position: relative;
+    display: inline-block;
+    isolation: isolate;
+    margin: 3px;
+    padding: 12px 11px !important;
+    color: #ffdca0 !important;
+    font-weight: 600;
+    white-space: nowrap;
+    border-radius: 5px;
+    text-shadow: 0 0 4px rgba(255, 166, 43, 0.9), 0 0 10px rgba(255, 81, 0, 0.45);
+    transition: color 180ms ease, background-color 180ms ease, box-shadow 180ms ease, text-shadow 180ms ease;
+}
+
+    /* Pehme valgus kirja all */
+
+    .fiery-link::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        border-radius: inherit;
+        pointer-events: none;
+        border-bottom: 1px solid rgba(255, 106, 0, 0.8);
+        background: radial-gradient( ellipse at 50% 110%, rgba(255, 91, 0, 0.23), transparent 70% );
+        box-shadow: 0 0 5px rgba(255, 89, 0, 0.14), inset 0 -3px 8px rgba(255, 65, 0, 0.08);
+        animation: emberPulse 2.6s ease-in-out infinite alternate;
+    }
+
+@keyframes emberPulse {
+    from {
+        opacity: 0.55;
+        filter: brightness(0.8);
+    }
+
+    to {
+        opacity: 1;
+        filter: brightness(1.35);
+    }
+}
+
+/* Tugevam hõõgumine hiirega hõljudes */
+
+.fiery-link:hover,
+.fiery-link:focus-visible {
+    color: #fff6d7 !important;
+    background-color: rgba(255, 75, 0, 0.19);
+    text-shadow: 0 0 4px #fff0b0, 0 0 10px #ffb52e, 0 0 20px #ff6500, 0 0 32px #ff3500;
+    box-shadow: 0 0 8px rgba(255, 104, 0, 0.6), 0 0 20px rgba(255, 55, 0, 0.3), inset 0 -2px 0 #ff8500;
+}
+
+    .fiery-link:hover::before,
+    .fiery-link:focus-visible::before {
+        background: radial-gradient( ellipse at 50% 110%, rgba(255, 65, 0, 0.65), transparent 72% );
+        box-shadow: 0 0 14px rgba(255, 80, 0, 0.6), inset 0 -4px 12px rgba(255, 75, 0, 0.3);
+    }
+
+/* ==========================================
+   5. KUUMAD SÄDEMED, MIS TULEVAD KIRJAST
+   ========================================== */
+
+.text-spark {
+    position: absolute;
+    z-index: 30;
+    left: var(--spark-x);
+    top: var(--spark-y);
+    width: var(--spark-size);
+    height: var(--spark-size);
+    border-radius: 50%;
+    pointer-events: none;
+    background: #fff8cf;
+    box-shadow: 0 0 3px 1px #fff4b0, 0 0 7px 2px #ffb52e, 0 0 13px 3px #ff6500;
+    animation: lavaEject var(--spark-duration) ease-out forwards;
+    will-change: transform, opacity;
+}
+
+@keyframes lavaEject {
+    0% {
+        opacity: 0;
+        transform: translate(0, 0) scale(0.4);
+        background: #fffbe0;
+    }
+
+    12% {
+        opacity: 1;
+        transform: translate( calc(var(--spark-dx) * 0.12), calc(var(--spark-dy) * 0.12) ) scale(1.25);
+        background: #fff9d1;
+    }
+
+    45% {
+        opacity: 1;
+        background: #ffb52e;
+        box-shadow: 0 0 4px #ffcf56, 0 0 9px #ff6500;
+    }
+
+    75% {
+        opacity: 0.8;
+        background: #ff6500;
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate( var(--spark-dx), var(--spark-dy) ) scale(0.15);
+        background: #c72d00;
+    }
+}
+
+/* ==========================================
+   6. VAJUTAMISEL TÕUSVAD LEEGID
+   ========================================== */
+
+.fiery-link.burning {
+    animation: burningText 700ms ease-out both;
+    pointer-events: none;
+}
+
+    .fiery-link.burning::before {
+        animation: burningGlow 700ms ease-out both;
+    }
+
+/* Leekide konteiner */
+
+.flame-burst {
+    position: absolute;
+    z-index: 40;
+    left: 50%;
+    bottom: 55%;
+    width: 100%;
+    height: 1px;
+    pointer-events: none;
+    transform: translateX(-50%);
+}
+
+/* Üks leegikeel */
+
+.flame {
+    position: absolute;
+    bottom: 0;
+    left: var(--flame-x);
+    width: var(--flame-width);
+    height: var(--flame-height);
+    border-radius: 55% 45% 35% 65%;
+    transform-origin: bottom center;
+    opacity: 0;
+    background: linear-gradient( to top, #ff2700 0%, #ff6500 38%, #ffb52e 70%, #fff6bc 100% );
+    filter: drop-shadow(0 0 5px #ff6500);
+    animation: flameLeap var(--flame-time) ease-out var(--flame-delay) forwards;
+}
+
+@keyframes flameLeap {
+    0% {
+        opacity: 0;
+        transform: translate(0, 8px) scale(0.2, 0.3) rotate(0deg);
+    }
+
+    15% {
+        opacity: 1;
+    }
+
+    40% {
+        opacity: 0.95;
+        transform: translate(var(--flame-drift), -20px) scale(0.8, 1) rotate(var(--flame-angle));
+    }
+
+    70% {
+        opacity: 0.8;
+        transform: translate( calc(var(--flame-drift) * -0.6), -45px ) scale(0.55, 1.25) rotate(calc(var(--flame-angle) * -1));
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(var(--flame-drift), -75px) scale(0.1, 0.6) rotate(var(--flame-angle));
+    }
+}
+
+@keyframes burningText {
+    0%, 100% {
+        filter: brightness(1);
+    }
+
+    20% {
+        filter: brightness(2.2);
+        color: #fff9dc;
+    }
+
+    55% {
+        filter: brightness(1.6);
+        color: #ff9b35;
+    }
+}
+
+@keyframes burningGlow {
+    0% {
+        opacity: 0.6;
+    }
+
+    25% {
+        opacity: 1;
+        background-color: rgba(255, 60, 0, 0.8);
+        box-shadow: 0 0 15px #fff0b0, 0 0 30px #ff6500, 0 0 50px #ff2700;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+/* ==========================================
+   7. SISUOSA
+   ========================================== */
+
+.cave-content {
+    position: relative;
+    z-index: 1;
+    flex: 1 0 auto;
+    width: 100%;
+    max-width: 1600px;
+    padding: 30px clamp(16px, 4vw, 55px) 45px;
+}
+
+/* Kaardid */
+
+.cave-theme .card {
+    color: var(--cave-text);
+    background: rgba(16, 12, 9, 0.92);
+    border: 1px solid rgba(255, 115, 25, 0.3);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
+}
+
+/* Tabelid */
+
+.cave-theme .table {
+    --bs-table-color: var(--cave-text);
+    --bs-table-bg: rgba(17, 12, 9, 0.92);
+    --bs-table-border-color: rgba(255, 115, 25, 0.22);
+}
+
+/* Sisestusväljad */
+
+.cave-theme .form-control,
+.cave-theme .form-select {
+    color: #ffe6bd;
+    background-color: #17100c;
+    border-color: #684024;
+}
+
+    .cave-theme .form-control::placeholder {
+        color: #a89176;
+    }
+
+    .cave-theme .form-control:focus,
+    .cave-theme .form-select:focus {
+        color: #fff0d0;
+        background-color: #21150e;
+        border-color: var(--lava-orange);
+        box-shadow: 0 0 0 0.2rem rgba(255, 100, 0, 0.2);
+    }
+
+.cave-theme label,
+.cave-theme .form-label {
+    color: #f4dfba;
+}
+
+/* Tavalised lingid */
+
+.cave-theme a:not(.fiery-link) {
+    color: var(--lava-gold);
+}
+
+/* Nupud */
+
+.cave-theme .btn-primary {
+    color: #fff1d0;
+    background: linear-gradient( 135deg, #9e3008, #e75a09 );
+    border-color: #ff8c32;
+}
+
+    .cave-theme .btn-primary:hover {
+        background: linear-gradient( 135deg, #c84208, #ff7915 );
+        box-shadow: 0 0 15px rgba(255, 90, 0, 0.4);
+    }
+
+/* ==========================================
+   8. JALUS
+   ========================================== */
+
+.cave-footer {
+    position: relative;
+    z-index: 2;
+    flex-shrink: 0;
+    padding: 20px 0;
+    color: #c7a879;
+    text-align: center;
+    background: rgba(7, 5, 4, 0.96);
+    border-top: 1px solid rgba(255, 93, 0, 0.75);
+    box-shadow: 0 -4px 22px rgba(255, 65, 0, 0.12);
+}
+
+    .cave-footer a {
+        color: var(--lava-gold);
+    }
+
+/* ==========================================
+   9. MOBIILIMENÜÜ
+   ========================================== */
+
+.cave-toggler {
+    border-color: rgba(255, 140, 40, 0.65);
+}
+
+    .cave-toggler:focus {
+        box-shadow: 0 0 0 0.2rem rgba(255, 100, 0, 0.25);
+    }
+
+@media (max-width: 1199.98px) {
+    .cave-navbar .navbar-nav {
+        align-items: stretch !important;
+        padding-top: 10px;
+    }
+
+    .fiery-link {
+        display: block;
+    }
+}
+
+/* ==========================================
+   10. VÄHEM LIIKUMIST EELISTAVAD KASUTAJAD
+   ========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    .fiery-brand,
+    .fiery-link::before,
+    .ember,
+    .text-spark,
+    .flame,
+    body.cave-theme::before {
+        animation: none !important;
+    }
+
+    body.cave-theme::before {
+        opacity: 0.45;
+        filter: none;
+    }
+
+    .fiery-link {
+        transition: none;
+    }
+}
+
+
+/* Kuma tugevneb ja nõrgeneb aeglaselt */
+@keyframes caveGlowBreathing {
+    0% {
+        opacity: 0.28;
+        filter: brightness(0.9);
+    }
+
+    50% {
+        opacity: 0.78;
+        filter: brightness(1.15);
+    }
+
+    100% {
+        opacity: 0.42;
+        filter: brightness(0.96);
+    }
+}
+
+/* ==========================================
+   11. KITSAM JA KESKEL JOONDATUD PAIGUTUS
+   ========================================== */
+
+/* Navbar jääb täislaiuses, kuid selle sisu kitseneb */
+.cave-navbar > .container,
+.cave-navbar > .container-fluid {
+    width: 100%;
+    max-width: 1340px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 24px;
+    padding-right: 24px;
+}
+
+/* Põhisisu kitsamaks ja keskele */
+.cave-content {
+    width: 100%;
+    max-width: 1250px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: clamp(20px, 3vw, 42px);
+    padding-right: clamp(20px, 3vw, 42px);
+}
+
+/* Väiksematel ekraanidel kasuta rohkem saadaolevat ruumi */
+@media (max-width: 768px) {
+    .cave-navbar > .container,
+    .cave-navbar > .container-fluid {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+    .cave-content {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
 }
