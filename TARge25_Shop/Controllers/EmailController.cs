@@ -17,10 +17,10 @@ namespace TARge25_Shop.Controllers
 
         //
         ////Kuna puudub enda eraldi vaade, siis ebavajalik
-        //public IActionResult Index()
-        //{
-        //    return View();
-        //}
+        public IActionResult Index()
+        {
+            return View();
+        }
 
         [HttpPost]
         //Vaja teha meetod, mis võtab vastu EMailDto objekti              
@@ -40,7 +40,10 @@ namespace TARge25_Shop.Controllers
             // ja kutsub välja _emailServices.SendEmail meetodi
             _emailServices.SendEmail(dto);
 
-            return RedirectToAction("Index", "Home");
+            ////Kui tahame suunata teise kausta vaatele
+            //return RedirectToAction("Index", "Home");
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }
