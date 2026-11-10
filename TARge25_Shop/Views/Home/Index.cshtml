@@ -1,8 +1,54 @@
-﻿@{
+﻿@model TARge25_Shop.Models.Email.EmailViewModel
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h3 class="card-title mb-1">Send Email</h3>
+                        </div>
+                    </div>
+                    <form asp-action="sendEmail" asp-controller="email" method="post" enctype="multipart/form-data">
+                        <div asp-validation-summary="All" class="text-danger mb-3"></div>
+                        <div class="mb-3">
+                            <label asp-for="To" class="form-label"></label>
+                            <input asp-for="To" class="form-control" />
+                            <span asp-validation-for="To" class="text-danger small"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Subject" class="form-label"></label>
+                            <input asp-for="Subject" class="form-control" />
+                            <span asp-validation-for="Subject" class="text-danger small"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Body" class="form-label"></label>
+                            <textarea asp-for="Body" class="form-control" rows="7"></textarea>
+                            <span asp-validation-for="Body" class="text-danger small"></span>
+                        </div>
+                        <div class="mb-4">
+                            <label asp-for="Attachments" class="form-label">Attachments</label>
+                            <input asp-for="Attachments" class="form-control" multiple type="file" />
+                            <span asp-validation-for="Attachments" class="text-danger small"></span>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                Send Email
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
