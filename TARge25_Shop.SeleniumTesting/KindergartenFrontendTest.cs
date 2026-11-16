@@ -210,6 +210,7 @@ namespace TARge25_Shop.SeleniumTesting
                 var findKindergartenGN = row.FindElement(By.Id("I_Kg_GN"));
                 if (findKindergartenGN.Text == thisRunGuid)
                 {
+                    doesItExist = true;
                     row.FindElement(By.Id("I_Kg_DelBtn")).Click();
                     break;
                 }
@@ -218,7 +219,7 @@ namespace TARge25_Shop.SeleniumTesting
             IWebElement d_DeleteKg = driver.FindElement(By.Id("Del_Kg_Del"));
             d_DeleteKg.Click();
 
-            bool isDeleted = false;
+            bool isDeleted = true;
 
             table = driver.FindElement(By.Id("IndexTable"));
             rows = table.FindElements(By.TagName("tr")).ToList();
@@ -239,8 +240,8 @@ namespace TARge25_Shop.SeleniumTesting
 
             driver.Quit();
 
+            Assert.True(doesItExist);
             Assert.True(isDeleted);
-            Assert.False(!isDeleted);
         }
 
          //

@@ -411,7 +411,7 @@ namespace TARge25_Shop.SeleniumTesting
             IWebElement d_DeleteSpaceship = driver.FindElement(By.Id("D_Delete"));
             d_DeleteSpaceship.Click();
 
-            bool isDeleted = false;
+            bool isDeleted = true;
 
             table = driver.FindElement(By.Id("IndexTable"));
             rows = table.FindElements(By.TagName("tr")).ToList();
@@ -432,7 +432,7 @@ namespace TARge25_Shop.SeleniumTesting
 
             driver.Quit();
 
-            Assert.True(isDeleted);
+            Assert.True(doesItExist);
             Assert.False(!isDeleted);
         }
 
