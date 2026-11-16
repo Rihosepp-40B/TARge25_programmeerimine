@@ -1,7 +1,10 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using System.Reflection;
 using TARge25_Shop.ApplicationServices.Services;
 using TARge25_Shop.Core.ServiceInterface;
 using TARge25_Shop.Data;
+using TARge25_Shop.Core.Domain;
 
 namespace TARge25_Shop
 {
@@ -26,10 +29,15 @@ namespace TARge25_Shop
             builder.Services.AddScoped<ICocktailServices, CocktailServices>();
             builder.Services.AddScoped<IEmailServices, EmailServices>();
 
-            //On vaja alla laadida Microsoft.EEntityFrameworkCore.SqlServer NuGet pakett,
+            //On vaja alla laadida Microsoft.EntityFrameworkCore.SqlServer NuGet pakett,
             //et kasutada UseSqlServer meetodit
             builder.Services.AddDbContext<TARge25_ShopContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddEntityFrameworkStores<TARge25_ShopContext>()
+                .AddDefaultTokenProviders();
 
             var app = builder.Build();
 
