@@ -72,7 +72,7 @@ namespace TARge25_Shop.Controllers
                     _emailServices.SendEmailToken(newsignup, token);
                     List<string> errordatas =
                         [
-                        "Area", "Accounts",
+                        "Area", "Account",
                         "Issue", "Success",
                         "StatusMessage", "Registration Sucesss",
                         "ActedOn", $"{vm.Email}",
@@ -145,6 +145,84 @@ namespace TARge25_Shop.Controllers
         public async Task<IActionResult> Login(string ? returnUrl)
         {
             return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl)
+        {
+            if (ModelState.IsValid)
+            {
+                // Otsib emaili DB'st üles
+                var user = await _userManager.FindByEmailAsync(model.Email);
+
+                if (user != null && !user.EmailConfirmed && (await _userManager.CheckPasswordAsync(user, model.Password)))
+                {
+                    ModelState.AddModelError(string.Empty, "Email not confirmed yet");
+                    return View(model);
+                }
+
+                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, true);
+
+                if (result.Succeeded)
+                {
+                    if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                    {
+                        return Redirect(returnUrl);
+                    }
+                    else
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
+                }
+
+                if (result.IsLockedOut)
+                {
+                    return View("AccountLocked");
+                }
+
+                ModelState.AddModelError("", "Invalid login attempt");
+            }
+
+            return View(model);
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                if (user != null && await _userManager.IsEmailConfirmedAsync(user))
+                {
+                    //Muutuja token tuleb uus token genereerida
+                    var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+                    //Muutuja password reset link viib resetpassword vaatele
+                    var passwordResetLink = Url.Action("ResetPassword", "Account", new { email = model.Email, token = token }, Request.Scheme);
+
+                    var emailDto = new EmailDto
+                    {
+                        // Email sisu
+                        To = model.Email,
+                        Subject = "SHOP Password reset request",
+                        Body = $"Reset your account password by clicking this link: <a href='{passwordResetLink}'>Reset Password</a>"
+                    };
+                    _emailServices.SendEmail(emailDto);
+
+                    return View("ForgotPasswordConfirmation");
+                }
+                return View("ForgotPasswordConfirmation");
+            }
+            return View(model);
         }
     }
 }

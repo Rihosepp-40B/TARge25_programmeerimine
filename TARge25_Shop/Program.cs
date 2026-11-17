@@ -35,9 +35,24 @@ namespace TARge25_Shop
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            {
+                // nõuab, et konto oleks kinnitatud enne sisselogimist
+                options.SignIn.RequireConfirmedAccount = true;
+                // salasõna pikkus peab olema 3 tähemärki
+                options.Password.RequiredLength = 3;
+
+                //vaikepakkuja asemel panime oma tokeni pakkuja selle asemele
+                options.Tokens.EmailConfirmationTokenProvider = "CustomEmailConfirmation";
+
+                // 3 korda paned valesti, siis lukustab
+                options.Lockout.MaxFailedAccessAttempts = 3;
+                // lukustamisest teeb lahti 1 minut peale lukustamisest
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(1);
+            })
                 .AddEntityFrameworkStores<TARge25_ShopContext>()
-                .AddDefaultTokenProviders();
+                .AddDefaultTokenProviders()
+                .AddTokenProvider<DataProtectorTokenProvider<ApplicationUser>>("CustomEmailConfirmation");
 
             var app = builder.Build();
 
