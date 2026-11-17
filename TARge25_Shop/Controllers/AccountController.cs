@@ -5,6 +5,8 @@ using TARge25_Shop.Core.Dto;
 using TARge25_Shop.Core.Domain;
 using TARge25_Shop.Core.ServiceInterface;
 using TARge25_Shop.Models.Account;
+using System.Diagnostics;
+using TARge25_Shop.Models;
 
 namespace TARge25_Shop.Controllers
 {
@@ -54,7 +56,7 @@ namespace TARge25_Shop.Controllers
                 {
                     var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
-                    var confirmationLink = Url.Action("ConfirmEmail", "Accounts", new { userId = user.Id, token = token }, Request.Scheme);
+                    var confirmationLink = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, token = token }, Request.Scheme);
 
                     EmailTokenDto newsignup = new();
                     newsignup.Token = token;
@@ -78,7 +80,7 @@ namespace TARge25_Shop.Controllers
                         ];
                     ViewBag.ErrorDatas = errordatas;
                     ViewBag.ErrorTitle = "Successfully registered";
-                    ViewBag.ErrorMessage = "Please confirm your email to confirm your account.";
+                    ViewBag.ErrorMessage = "Please check your email to confirm your account.";
 
                     return View("ConfirmationEmailMessage");
                 }
@@ -118,8 +120,31 @@ namespace TARge25_Shop.Controllers
                 "CreatedAccountData", $"{user.Email}\n{user.City}\n[password hidden]"
                 ];
 
-            return null;
-            //teha vaade ConfirmationEmailMessage
+            if (result.Succeeded)
+            {
+                errordatas =
+                [
+                "Area", "Account",
+                "Issue", "Success",
+                "StatusMessage", "Registration Success",
+                "ActedOn", $"{user.Email}",
+                "CreatedAccountData", $"{user.Email}\n{user.City}\n[password hidden]"
+                ];
+                ViewBag.ErrorMessage = errordatas;
+                return View();
+            }
+
+            ViewBag.ErrorDatas = errordatas;
+            ViewBag.ErrorTitles = "Email cannot be confirmed";
+            ViewBag.ErrorMessage = $"The user email, with userid of {userId}, cannot be confirmed";
+            return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier});
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> Login(string ? returnUrl)
+        {
+            return View();
         }
     }
 }
