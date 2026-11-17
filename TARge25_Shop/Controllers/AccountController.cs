@@ -224,5 +224,26 @@ namespace TARge25_Shop.Controllers
             }
             return View(model);
         }
+
+        [HttpGet]
+        [AllowAnonymous]
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult ResetPassword(string email, string token)
+        {
+            // kui token või email on null, siis tuleb sõnum Invalid password reset token
+            if (email == null || token == null)
+            {
+                ModelState.AddModelError("", "Invalid password reset token");
+            }
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+
+            return View(model);
+        }
     }
 }
