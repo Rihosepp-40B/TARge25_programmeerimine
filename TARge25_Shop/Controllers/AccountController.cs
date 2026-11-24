@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using TARge25_Shop.Core.Dto;
-using TARge25_Shop.Core.Domain;
-using TARge25_Shop.Core.ServiceInterface;
-using TARge25_Shop.Models.Account;
 using System.Diagnostics;
+using System.Security.Claims;
+using TARge25_Shop.Core.Domain;
+using TARge25_Shop.Core.Dto;
+using TARge25_Shop.Core.ServiceInterface;
 using TARge25_Shop.Models;
+using TARge25_Shop.Models.Account;
 
 namespace TARge25_Shop.Controllers
 {
@@ -142,15 +143,26 @@ namespace TARge25_Shop.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> Login(string ? returnUrl)
+        public async Task<IActionResult> Login(string ? returnUrl = null)
         {
-            return View();
+            var model = new LoginViewModel
+            {
+                ReturnUrl = returnUrl,
+                ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList()
+            };
+
+            return View(model);
         }
 
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl)
         {
+            ///////
+            model.ReturnUrl = returnUrl;
+            model.ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+            ///////
+
             if (ModelState.IsValid)
             {
                 // Otsib emaili DB'st üles
@@ -186,6 +198,87 @@ namespace TARge25_Shop.Controllers
 
             return View(model);
         }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public IActionResult ExternalLogin(string provider, string? returnUrl = null)
+        {
+            var redirectUrl = Url.Action(nameof(ExternalLoginCallback), "Account", new { ReturnUrl = returnUrl });
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+            return new ChallengeResult(provider, properties);
+        }
+
+        [AllowAnonymous]
+        public async Task<IActionResult> ExternalLoginCallback(string? returnUrl = null, string? remoteError = null)
+        {
+            returnUrl ??= Url.Content("~/");
+
+            var loginViewModel = new LoginViewModel
+            {
+                ReturnUrl = returnUrl,
+                ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList()
+            };
+
+            if (remoteError != null)
+            {
+                ModelState.AddModelError(string.Empty, $"Error from external provider: {remoteError}");
+                return View("Login", loginViewModel);
+            }
+
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+            {
+                ModelState.AddModelError(string.Empty, "Error loading external login information.");
+                return View("Login", loginViewModel);
+            }
+
+            // Proovi sisse logida, kui kasutajal on juba väline login seotud
+            var signInResult = await _signInManager.ExternalLoginSignInAsync(
+                info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
+
+            if (signInResult.Succeeded)
+            {
+                return LocalRedirect(returnUrl);
+            }
+
+            // Kui kontot veel pole, otsi või loo see Google'ist saadud e-posti alusel
+            var email = info.Principal.FindFirstValue(System.Security.Claims.ClaimTypes.Email);
+
+            if (email != null)
+            {
+                var user = await _userManager.FindByEmailAsync(email);
+
+                if (user == null)
+                {
+                    user = new ApplicationUser
+                    {
+                        UserName = email,
+                        Email = email,
+                        EmailConfirmed = true // Vajalik, kuna RequireConfirmedAccount = true
+                    };
+
+                    var createResult = await _userManager.CreateAsync(user);
+                    if (!createResult.Succeeded)
+                    {
+                        foreach (var error in createResult.Errors)
+                        {
+                            ModelState.AddModelError(string.Empty, error.Description);
+                        }
+                        return View("Login", loginViewModel);
+                    }
+                }
+
+                await _userManager.AddLoginAsync(user, info);
+                await _signInManager.SignInAsync(user, isPersistent: false);
+
+                return LocalRedirect(returnUrl);
+            }
+
+            ModelState.AddModelError(string.Empty, "Email claim not received from Google.");
+            return View("Login", loginViewModel);
+        }
+
+
 
         [HttpGet]
         [AllowAnonymous]
